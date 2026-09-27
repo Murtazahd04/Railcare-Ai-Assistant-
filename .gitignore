@@ -1,0 +1,26 @@
+# dependencies
+node_modules/
+package-lock.json.bak
+
+# build output
+dist/
+build/
+
+# env / secrets — never commit real credentials
+.env
+.env.local
+.env.*.local
+
+# private docs — contains real credentials, keep out of any public repo/upload
+README.private.md
+
+# OS/editor junk
+.DS_Store
+.vscode/
+*.log
+
+# Python AI microservice — venv and downloaded model weights are large and local-only
+ai-service/venv/
+ai-service/voices/
+ai-service/__pycache__/
+*.pyc

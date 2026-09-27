@@ -1,0 +1,72 @@
+flowchart TB
+    subgraph Client_Tier["1. CLIENT TIER (React 18 + Vite + Tailwind CSS)"]
+        CP["Passenger Portal\n(#/passenger)\nPNR + Mobile Auth"]
+        CS["Customer Voice Simulator\n(#/customer)\nSpeech In/Out + SOS"]
+        ED["Executive Dashboard\n(#/)\nWebRTC Audio + Call Ops"]
+        SD["Supervisor Console\n(#/supervisor)\nLive Monitor + Force-Transfer"]
+        AD["Admin Training Studio\n(#/admin)\n8-Step KB Intent Wizard"]
+        RD["RFID Tracker View\n(#/rfid)\nInventory Flow Diagram"]
+        AN["Analytics Dashboard\n(#/analytics)\nVolume, Intents, CSAT"]
+    end
+
+    subgraph Gateway_Signaling["2. API GATEWAY & SIGNALING (Node.js + Express + Socket.IO)"]
+        direction TB
+        EXP["Express REST API (Port 4000)\nJWT Auth, Zod Validation,\nHelmet, Rate Limiters, MongoSanitize"]
+        SIO["Socket.IO Signaling Server\nWebRTC SDP/ICE Relay,\nFIFO Priority Queue, Ring Timers,\nLive Executive Roster"]
+        SWEEP["CPGRAMS Escalation Engine\n(Background setInterval Daemon)\nLevels 0 -> 1 -> 2 Escalation"]
+        REC_UP["GridFS Audio Streamer\n(Multer MemoryStorage -> MongoDB)"]
+    end
+
+    subgraph AI_Intelligence["3. AI & SPEECH INTELLIGENCE TIER"]
+        direction TB
+        PY_FAST["Python FastAPI Microservice (Port 8001)\n(ai-service/main.py)"]
+        ST_EMB["Sentence-Transformers\n(all-MiniLM-L6-v2)\nEmbeddings & Cosine Sim"]
+        WHISPER["Faster-Whisper (base)\nLocal STT Engine"]
+        PIPER["Piper TTS (ONNX)\nNeural Voice Generation"]
+        LOCAL_FALLBACK["Node.js Local Fallback Engine\n(Token Jaccard + Keyword Scorer)\nZero-dependency backup"]
+        BROWSER_SPEECH["Browser Web Speech API\n(webkitSpeechRecognition +\nspeechSynthesis fallback)"]
+    end
+
+    subgraph Database_Tier["4. PERSISTENCE LAYER (MongoDB Atlas / Docker)"]
+        MONGO[("MongoDB Database (srlms)\nCollections: Users, Calls, Complaints,\nFines, Passengers, Trains, Rfid,\nKbCategories, KbIntents, UnansweredQueries")]
+        GRIDFS[("MongoDB GridFS\n('recordings.files' & 'recordings.chunks')\nAudio WebM Recordings")]
+    end
+
+    subgraph External_Integrations["5. THIRD-PARTY & TELEPHONY INTEGRATIONS"]
+        TW_VOICE["Twilio Voice (PSTN)\nInbound Phone Helpline\nPolly.Aditi TTS + Twilio STT"]
+        TW_CB["Twilio Outbound Callbacks\nPSTN Mobile Bridging"]
+        TW_WA["Twilio WhatsApp Sandbox\nAutomated Alerts (Join Code)"]
+        RZP["Razorpay Gateway\nOrders API, Payment Links,\nHMAC-SHA256 Verification"]
+        GMAIL["Gmail SMTP (Nodemailer)\nTransactional Emails & SOS Alerts"]
+    end
+
+    %% Connections
+    CP -->|REST /public/* & /passengers/*| EXP
+    CS -->|REST /public/ai-query & WebSockets| EXP
+    CS <-->|WebRTC Signaling & Queue Events| SIO
+    ED <-->|WebRTC Voice Signaling & Roster| SIO
+    SD <-->|Supervisor Monitor Stream & Control| SIO
+    AD -->|REST /kb/*| EXP
+    RD -->|REST /rfid/*| EXP
+    AN -->|REST /calls/analytics/*| EXP
+
+    CS -.->|Local Mic/Speaker| BROWSER_SPEECH
+    CS -->|Proxy /voice/stt & /voice/tts| EXP
+    ED -->|Upload WebM Call Recording| REC_UP
+    REC_UP --> GRIDFS
+
+    EXP -->|HTTP POST /classify, /stt, /tts| PY_FAST
+    PY_FAST --> ST_EMB
+    PY_FAST --> WHISPER
+    PY_FAST --> PIPER
+    EXP -.->|Fallback if AI Service is Offline| LOCAL_FALLBACK
+
+    EXP <--> MONGO
+    SIO --> MONGO
+    SWEEP <--> MONGO
+
+    EXP -->|Orders, Links, Signature Check| RZP
+    EXP -->|Status & Escalation Notifications| TW_WA
+    EXP -->|Email Confirmations & SOS Escalation| GMAIL
+    EXP -->|Outbound Callbacks| TW_CB
+    TW_VOICE <-->|Webhooks: /telephony/voice/*| EXP

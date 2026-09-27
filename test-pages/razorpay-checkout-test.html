@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>SRLMS — Razorpay test checkout</title>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body style="font-family: sans-serif; max-width: 480px; margin: 60px auto;">
+  <h3>Test a fine payment (Razorpay test mode)</h3>
+  <p>1. Paste a JWT token (from <code>/api/v1/auth/login</code>) and a Fine _id below.</p>
+
+  <label>Token</label><br/>
+  <input id="token" style="width:100%" placeholder="paste JWT here" /><br/><br/>
+
+  <label>Fine ID</label><br/>
+  <input id="fineId" style="width:100%" placeholder="paste fine _id here" /><br/><br/>
+
+  <button onclick="startPayment()">Pay with Razorpay (test mode)</button>
+  <pre id="log" style="background:#111;color:#0f0;padding:10px;margin-top:20px;white-space:pre-wrap;"></pre>
+
+  <script>
+    const API_BASE = (window.location && window.location.hostname)
+      ? `${window.location.protocol}//${window.location.hostname}:4000/api/v1`
+      : "http://localhost:4000/api/v1";
+    function log(msg) { document.getElementById("log").textContent += msg + "\n"; }
+
+    async function startPayment() {
+      const token = document.getElementById("token").value.trim();
+      const fineId = document.getElementById("fineId").value.trim();
+
+      log("Creating Razorpay order...");
+      const orderRes = await fetch(`${API_BASE}/fines/${fineId}/create-razorpay-order`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const order = await orderRes.json();
+      if (!orderRes.ok) { log("Error: " + JSON.stringify(order)); return; }
+      log("Order created: " + JSON.stringify(order));
+
+      const rzp = new Razorpay({
+        key: order.keyId,
+        amount: order.amount,
+        currency: order.currency,
+        order_id: order.orderId,
+        name: "SRLMS — Indian Railways (test)",
+        description: "Linen fine payment (Razorpay TEST MODE — no real money moves)",
+        handler: async function (response) {
+          log("Checkout completed, verifying signature...");
+          const verifyRes = await fetch(`${API_BASE}/fines/${fineId}/verify-razorpay-payment`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+            body: JSON.stringify(response),
+          });
+          const verifyData = await verifyRes.json();
+          log("Verify result: " + JSON.stringify(verifyData));
+        },
+        theme: { color: "#3B82C4" },
+      });
+      rzp.open();
+    }
+  </script>
+
+  <p style="margin-top:30px;color:#888;font-size:12px;">
+    This is TEST MODE ONLY (rzp_test_ keys). Use Razorpay's published test
+    card 4111 1111 1111 1111, any future expiry, any CVV — no real money
+    ever moves. Free forever in test mode, no KYC required.
+  </p>
+</body>
+</html>
