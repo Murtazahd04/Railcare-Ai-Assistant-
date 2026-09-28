@@ -17,7 +17,13 @@ import { mixStreams } from "./callRecorder";
  * ---------------------------------------------------------------- */
 
 const ICE_SERVERS = {
-  iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+  iceServers: [
+    { urls: "stun:stun.l.google.com:19302" },
+    { urls: "stun:stun1.l.google.com:19302" },
+    { urls: "stun:stun2.l.google.com:19302" },
+    { urls: "stun:stun3.l.google.com:19302" },
+    { urls: "stun:stun4.l.google.com:19302" },
+  ],
 };
 
 export function useCallEngine({ socket, role, name }) {
@@ -38,11 +44,35 @@ export function useCallEngine({ socket, role, name }) {
   const localStreamRef = useRef(null);
   const remoteStreamRef = useRef(null); // raw MediaStream, used for call recording
   const remoteAudioRef = useRef(null); // attach to an <audio autoPlay> element
+  const internalAudioRef = useRef(null); // persistent audio player immune to React view re-renders
+  const pendingCandidatesRef = useRef([]); // ICE candidate queue to prevent dropping candidates before remote description is set
   const targetIdRef = useRef(null); // socket id of current call partner
   const callIdRef = useRef(null);
   const monitorPcRef = useRef(null); // separate connection feeding a supervisor's "listen in"
 
   useEffect(() => { callIdRef.current = callId; }, [callId]);
+
+  // Create persistent Audio object on mount so voice playback is independent of component DOM mounting
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const el = new Audio();
+      el.autoplay = true;
+      el.playsInline = true;
+      internalAudioRef.current = el;
+      return () => {
+        el.pause();
+        el.srcObject = null;
+      };
+    }
+  }, []);
+
+  // Keep remote audio element synced whenever the DOM element or stream changes
+  useEffect(() => {
+    if (remoteAudioRef.current && remoteStreamRef.current && remoteAudioRef.current.srcObject !== remoteStreamRef.current) {
+      remoteAudioRef.current.srcObject = remoteStreamRef.current;
+      remoteAudioRef.current.play?.().catch(() => {});
+    }
+  });
 
   // ---- register on mount ---------------------------------------------
   useEffect(() => {
@@ -52,19 +82,67 @@ export function useCallEngine({ socket, role, name }) {
   }, [socket, role, name]);
 
   const ensureLocalStream = useCallback(async () => {
-    if (localStreamRef.current) return localStreamRef.current;
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    if (localStreamRef.current && localStreamRef.current.active && localStreamRef.current.getAudioTracks().length > 0) {
+      return localStreamRef.current;
+    }
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+      },
+      video: false,
+    });
     localStreamRef.current = stream;
+    console.log(`[webrtc:${role}] local microphone captured:`, stream.getAudioTracks().map((t) => t.label).join(", "));
     return stream;
-  }, []);
+  }, [role]);
 
   function closePeer() {
+    pendingCandidatesRef.current = [];
     if (pcRef.current) {
       pcRef.current.close();
       pcRef.current = null;
     }
+    if (internalAudioRef.current) {
+      internalAudioRef.current.pause();
+      internalAudioRef.current.srcObject = null;
+    }
     if (remoteAudioRef.current) remoteAudioRef.current.srcObject = null;
   }
+
+  const addCandidate = useCallback(async (candidate) => {
+    const pc = pcRef.current;
+    if (!pc || !candidate) return;
+    if (pc.remoteDescription && pc.remoteDescription.type) {
+      try {
+        await pc.addIceCandidate(new RTCIceCandidate(candidate));
+      } catch (err) {
+        console.warn("[webrtc] addIceCandidate error:", err);
+      }
+    } else {
+      // Buffer early ICE candidate until setRemoteDescription completes
+      pendingCandidatesRef.current.push(candidate);
+    }
+  }, []);
+
+  const flushPendingCandidates = useCallback(async () => {
+    const pc = pcRef.current;
+    if (!pc || !pc.remoteDescription) return;
+    while (pendingCandidatesRef.current.length > 0) {
+      const candidate = pendingCandidatesRef.current.shift();
+      try {
+        await pc.addIceCandidate(new RTCIceCandidate(candidate));
+      } catch (err) {
+        console.warn("[webrtc] error applying buffered candidate:", err);
+      }
+    }
+  }, []);
+
+  const unlockAudio = useCallback(() => {
+    if (internalAudioRef.current) internalAudioRef.current.play?.().catch(() => {});
+    if (remoteAudioRef.current) remoteAudioRef.current.play?.().catch(() => {});
+  }, []);
 
   async function buildPeerConnection(targetId, isOfferer) {
     closePeer();
@@ -76,11 +154,31 @@ export function useCallEngine({ socket, role, name }) {
     stream.getTracks().forEach((track) => pc.addTrack(track, stream));
 
     pc.ontrack = (event) => {
-      remoteStreamRef.current = event.streams[0];
+      console.log(`[webrtc:${role}] remote audio track received:`, event.track);
+      const stream = event.streams[0] || new MediaStream([event.track]);
+      remoteStreamRef.current = stream;
+
+      // 1. Play through persistent internal audio element
+      if (internalAudioRef.current) {
+        internalAudioRef.current.srcObject = stream;
+        internalAudioRef.current.play?.().catch((err) => {
+          console.warn(`[webrtc:${role}] internalAudio play rejected (autoplay):`, err);
+        });
+      }
+
+      // 2. Play through React DOM audio element
       if (remoteAudioRef.current) {
-        remoteAudioRef.current.srcObject = event.streams[0];
+        remoteAudioRef.current.srcObject = stream;
+        remoteAudioRef.current.play?.().catch((err) => {
+          console.warn(`[webrtc:${role}] DOM audio play() rejected (autoplay):`, err);
+        });
       }
     };
+
+    pc.oniceconnectionstatechange = () => {
+      console.log(`[webrtc:${role}] iceConnectionState:`, pc.iceConnectionState);
+    };
+
     pc.onicecandidate = (event) => {
       if (event.candidate) {
         socket.emit("webrtc:ice-candidate", {
@@ -164,18 +262,20 @@ export function useCallEngine({ socket, role, name }) {
       setCallId(cid);
       const pc = await buildPeerConnection(fromId, false);
       await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+      await flushPendingCandidates();
       const answer = await pc.createAnswer();
       await pc.setLocalDescription(answer);
       socket.emit("webrtc:answer", { callId: cid, targetId: fromId, sdp: answer });
       setStatus("connected");
     };
     const onAnswer = async ({ sdp }) => {
-      if (pcRef.current) await pcRef.current.setRemoteDescription(new RTCSessionDescription(sdp));
+      if (pcRef.current) {
+        await pcRef.current.setRemoteDescription(new RTCSessionDescription(sdp));
+        await flushPendingCandidates();
+      }
     };
     const onIceCandidate = async ({ candidate }) => {
-      if (pcRef.current && candidate) {
-        try { await pcRef.current.addIceCandidate(candidate); } catch { /* ignore */ }
-      }
+      await addCandidate(candidate);
     };
     const onTransferring = ({ newExecutiveName }) => {
       setStatus("transferring");
@@ -277,22 +377,24 @@ export function useCallEngine({ socket, role, name }) {
 
   // ---- public actions --------------------------------------------------
   const placeCall = useCallback((context) => {
+    unlockAudio();
     setError(null);
     setRetryInfo(null);
     setEndInfo(null);
     setCallContext(context || null); // so the caller's own UI can read back topic/pnr/isEmergency etc. immediately
     socket.emit("customer:call", { context });
-  }, [socket]);
+  }, [socket, unlockAudio]);
 
   const acceptCall = useCallback(() => {
     if (!incoming) return;
+    unlockAudio();
     const isTransfer = incoming.kind === "transfer";
     socket.emit(isTransfer ? "call:accept-transfer" : "call:accept", { callId: incoming.callId });
     setCallId(incoming.callId);
     setPeerName(isTransfer ? incoming.fromExecutiveName : incoming.customerName);
     setCallContext(incoming.context || null);
     setIncoming(null);
-  }, [socket, incoming]);
+  }, [socket, incoming, unlockAudio]);
 
   const rejectCall = useCallback(() => {
     if (!incoming) return;
@@ -329,11 +431,17 @@ export function useCallEngine({ socket, role, name }) {
     socket.emit("call:cancel-queue");
   }, [socket]);
 
+  const setSpeaker = useCallback((on) => {
+    if (internalAudioRef.current) internalAudioRef.current.muted = !on;
+    if (remoteAudioRef.current) remoteAudioRef.current.muted = !on;
+  }, []);
+
   const clearError = useCallback(() => setError(null), []);
 
   return {
     status, callId, peerName, incoming, roster, muted, peerMuted, error, callContext, queueInfo, retryInfo, endInfo,
     remoteAudioRef, localStreamRef, remoteStreamRef,
     placeCall, startCall: placeCall, acceptCall, rejectCall, endCall, toggleMute, transferCall, cancelQueue, clearError,
+    setSpeaker, unlockAudio,
   };
 }

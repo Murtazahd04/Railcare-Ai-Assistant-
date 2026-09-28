@@ -535,7 +535,7 @@ export default function CustomerSimulator() {
               <div className="text-xs text-[#E5484D] bg-[#E5484D]/10 border border-[#E5484D]/30 rounded-md px-3 py-2">{engine.error}</div>
             )}
 
-            <audio ref={engine.remoteAudioRef} autoPlay />
+            <audio ref={engine.remoteAudioRef} autoPlay playsInline />
 
             {(engine.status === "ringing-out" || engine.status === "transferring") && (
               <div className="text-center text-sm text-[#F5A623] py-3 animate-pulse">

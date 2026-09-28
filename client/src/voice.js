@@ -79,31 +79,61 @@ export async function speak(text) {
 // Listening (STT)
 // ---------------------------------------------------------------------
 
-function listenWithBrowser() {
+function listenWithBrowser(lang = "en-IN") {
   return new Promise((resolve, reject) => {
     if (!SpeechRecognitionImpl) return reject("not-supported");
     const rec = new SpeechRecognitionImpl();
-    rec.lang = "en-IN";
+    rec.lang = lang || "en-IN";
     rec.interimResults = false;
     rec.maxAlternatives = 1;
-    rec.onresult = (e) => resolve(e.results[0][0].transcript);
-    rec.onerror = (e) => reject(e.error || "speech-error");
-    rec.start();
+    let finished = false;
+
+    rec.onresult = (e) => {
+      const text = e.results?.[0]?.[0]?.transcript || "";
+      if (text.trim()) {
+        finished = true;
+        resolve(text.trim());
+      }
+    };
+    rec.onerror = (e) => {
+      if (!finished) {
+        finished = true;
+        reject(e.error || "speech-error");
+      }
+    };
+    rec.onend = () => {
+      if (!finished) {
+        finished = true;
+        reject("no-speech");
+      }
+    };
+
+    try {
+      rec.start();
+    } catch (err) {
+      reject(err);
+    }
   });
 }
 
 /**
- * Records the mic with a simple volume-based auto-stop: stops ~1.1s after
- * the speaker goes quiet (so it behaves like the native recognizer — no
- * manual stop button needed), with an 8s hard cap as a safety net. Then
- * ships the clip to the server's /voice/stt (faster-whisper).
+ * Records the mic with a simple volume-based auto-stop: stops ~0.9s after
+ * the speaker goes quiet, with a 6s hard cap. Then ships to faster-whisper.
  */
-function recordUntilSilence({ maxMs = 8000, silenceMs = 1100, silenceThreshold = 0.02 } = {}) {
+function recordUntilSilence({ maxMs = 6000, silenceMs = 900, silenceThreshold = 0.015 } = {}) {
   return new Promise((resolve, reject) => {
     if (typeof MediaRecorder === "undefined") return reject("not-supported");
     navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
       const chunks = [];
-      const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus") ? "audio/webm;codecs=opus" : "";
+      let mimeType = "";
+      if (MediaRecorder.isTypeSupported("audio/webm;codecs=opus")) {
+        mimeType = "audio/webm;codecs=opus";
+      } else if (MediaRecorder.isTypeSupported("audio/webm")) {
+        mimeType = "audio/webm";
+      } else if (MediaRecorder.isTypeSupported("audio/mp4")) {
+        mimeType = "audio/mp4";
+      }
+
       const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
       recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
 
@@ -158,17 +188,18 @@ function recordUntilSilence({ maxMs = 8000, silenceMs = 1100, silenceThreshold =
 }
 
 async function listenWithServer() {
-  const blob = await recordUntilSilence(); // rejects (not throws-async) straight to caller's catch if mic/MediaRecorder unavailable
+  const blob = await recordUntilSilence();
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 15000);
+  const timeout = setTimeout(() => controller.abort(), 10000);
   try {
     const form = new FormData();
-    form.append("audio", blob, "utterance.webm");
+    const ext = blob.type && blob.type.includes("mp4") ? "mp4" : "webm";
+    form.append("audio", blob, `utterance.${ext}`);
     const res = await fetch(`${API_BASE}/voice/stt`, { method: "POST", body: form, signal: controller.signal });
-    if (!res.ok) return null; // { fallback: true } — service unavailable
+    if (!res.ok) return null;
     const data = await res.json();
     const text = (data.text || "").trim();
-    return text || null; // empty transcript (silence-only clip) counts as "try the browser instead"
+    return text || null;
   } catch {
     return null;
   } finally {
@@ -177,17 +208,30 @@ async function listenWithServer() {
 }
 
 /**
- * listen() -> Promise<string> — the transcribed utterance.
- * Tries the real Whisper backend first; on any failure (service down,
- * mic permission denied for MediaRecorder, empty transcript) falls back to
- * the browser's native SpeechRecognition where available.
+ * listen(lang) -> Promise<string> — the transcribed utterance.
+ * Tries the browser's native low-latency SpeechRecognition first (instant response,
+ * recognizes Indian English and Hindi accents). If not supported or unavailable,
+ * automatically falls back to faster-whisper on the server.
  */
-export async function listen() {
+export async function listen(lang = "en-IN") {
+  if (SpeechRecognitionImpl) {
+    try {
+      const text = await listenWithBrowser(lang);
+      if (text && text.trim()) return text.trim();
+    } catch (err) {
+      if (err === "not-allowed" || err === "permission-denied") {
+        throw err;
+      }
+      // If native recognition ended without speech or network glitch, try server Whisper
+    }
+  }
+
   try {
     const text = await listenWithServer();
-    if (text) return text;
-  } catch {
-    // MediaRecorder path unavailable at all — fall through to browser recognizer
+    if (text && text.trim()) return text.trim();
+  } catch (err) {
+    // Both engines exhausted
   }
-  return listenWithBrowser();
+
+  throw new Error("Could not capture speech");
 }

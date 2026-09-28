@@ -83,7 +83,7 @@ export default function ExecutiveLiveCallPanel({ engine, token }) {
 
   return (
     <div className="rounded-lg border border-[#E2E8F0] bg-[#FFFFFF] p-4 space-y-3">
-      <audio ref={remoteAudioRef} autoPlay />
+      <audio ref={remoteAudioRef} autoPlay playsInline />
 
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium uppercase tracking-wider text-[#64748B]">Real Call Line</span>

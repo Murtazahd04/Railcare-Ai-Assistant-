@@ -253,10 +253,11 @@ export default function PassengerPortal() {
 
   // Sync speaker toggle with remote audio element
   useEffect(() => {
+    engine.setSpeaker?.(speakerOn);
     if (engine.remoteAudioRef?.current) {
       engine.remoteAudioRef.current.muted = !speakerOn;
     }
-  }, [speakerOn, engine.remoteAudioRef]);
+  }, [speakerOn, engine.setSpeaker, engine.remoteAudioRef]);
 
   // Live call timer + active tracking
   useEffect(() => {
@@ -442,7 +443,7 @@ export default function PassengerPortal() {
     setActiveFaqCategory(null);
     setChatPhase("welcome");
     setView("chat");
-    setAiPhase("listening");
+    setAiPhase("idle");
     try {
       const r = await fetch(`${API_BASE}/public/faq`);
       const data = await r.json();
@@ -508,7 +509,7 @@ export default function PassengerPortal() {
     resetChat();
     setChatPhase("welcome");
     setActiveFaqCategory(null);
-    setAiPhase("listening");
+    setAiPhase("idle");
   }
 
   // Category icons map
@@ -615,19 +616,31 @@ export default function PassengerPortal() {
   }
 
   async function handleSpeak() {
+    if (aiPhase === "listening") {
+      setAiPhase("idle");
+      return;
+    }
     setAiPhase("listening");
     setVoiceError(null);
+    const recognitionLang = lang === "hi" ? "hi-IN" : "en-IN";
     try {
-      const text = await listenOnce();
-      if (text) {
-        pushTranscript("customer", text);
-        await processQuery(text);
+      const text = await listenOnce(recognitionLang);
+      if (text && text.trim()) {
+        pushTranscript("customer", text.trim());
+        setChatPhase("chatting");
+        await processQuery(text.trim());
       } else {
-        setAiPhase("listening");
+        setAiPhase("idle");
       }
     } catch (err) {
-      setVoiceError(err === "not-supported" ? "Voice recognition is not supported in this browser." : "Could not hear audio. Please try typing.");
-      setAiPhase("listening");
+      console.warn("[voice] speech recognition error:", err);
+      const errMsg = (err === "not-allowed" || err === "permission-denied")
+        ? "Microphone access blocked. Please allow microphone permissions in your browser."
+        : err === "not-supported"
+        ? "Voice recognition is not supported in this browser."
+        : "Could not hear audio clearly. Please try speaking into the mic or typing below.";
+      setVoiceError(errMsg);
+      setAiPhase("idle");
     }
   }
 
@@ -1700,6 +1713,28 @@ export default function PassengerPortal() {
                     </div>
                   )}
 
+                  {/* Live speech & AI status indicators */}
+                  {aiPhase === "listening" && (
+                    <div className="flex items-center gap-2 p-3 rounded-xl bg-[#0284C7]/10 border border-[#0284C7]/30 text-[#0284C7] text-xs font-semibold animate-pulse max-w-sm">
+                      <Mic size={16} className="text-[#0284C7] shrink-0 animate-bounce" />
+                      <span>Listening... Speak your query clearly into the mic</span>
+                    </div>
+                  )}
+
+                  {aiPhase === "thinking" && (
+                    <div className="flex items-center gap-2 p-3 rounded-xl bg-gray-500/10 border border-gray-500/20 text-xs font-medium max-w-sm">
+                      <Loader2 size={15} className="animate-spin text-[#004B87] shrink-0" />
+                      <span>Processing your query...</span>
+                    </div>
+                  )}
+
+                  {aiPhase === "speaking" && (
+                    <div className="flex items-center gap-2 p-2.5 rounded-xl bg-[#10B981]/10 border border-[#10B981]/30 text-[#059669] text-xs font-medium max-w-sm">
+                      <Volume2 size={15} className="animate-pulse shrink-0" />
+                      <span>Assistant is speaking...</span>
+                    </div>
+                  )}
+
                   {voiceError && (
                     <div className="p-2.5 rounded-lg bg-[#EF4444]/10 border border-[#EF4444]/30 text-[#DC2626] text-xs">{voiceError}</div>
                   )}
@@ -1744,7 +1779,7 @@ export default function PassengerPortal() {
         {/* Live Call / SOS Modal & Audio */}
         {renderCallModal()}
         {renderMinimizedCallBar()}
-        <audio ref={engine.remoteAudioRef} autoPlay />
+        <audio ref={engine.remoteAudioRef} autoPlay playsInline />
 
         {/* Theme Selector Modal */}
         {renderThemeModal()}
@@ -2106,7 +2141,7 @@ export default function PassengerPortal() {
         {/* Live Call / SOS Modal & Audio */}
         {renderCallModal()}
         {renderMinimizedCallBar()}
-        <audio ref={engine.remoteAudioRef} autoPlay />
+        <audio ref={engine.remoteAudioRef} autoPlay playsInline />
 
         {/* Theme Selector Modal */}
         {renderThemeModal()}
@@ -2683,7 +2718,7 @@ export default function PassengerPortal() {
 
       {/* Live Call / SOS Modal & Audio */}
       {renderCallModal()}
-      <audio ref={engine.remoteAudioRef} autoPlay />
+      <audio ref={engine.remoteAudioRef} autoPlay playsInline />
 
       {/* Theme Selector Modal (Requirement 1) */}
       {renderThemeModal()}

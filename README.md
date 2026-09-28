@@ -482,4 +482,19 @@ uvicorn main:app --port 8001 --reload
 Open **http://localhost:5173** in your browser:
 *   **Staff Login (`#/staff-login`)**: Use seeded credentials (e.g. `priya` / `password123` for Executive, `supervisor` / `password123` for Supervisor, `admin` / `password123` for Admin).
 *   **Customer Calling Simulator**: Open **http://localhost:5173/#/customer** in an Incognito tab.
-*   **Passenger Self-Service Portal**: Open **http://localhost:5173/#/passenger** (enter PNR `PNR-1001` and mobile `9876543210` from seeded data).
+*   **Passenger Self-Service Portal**: Open **http://localhost:5173/#/passenger** (e.g. `passenger1` / `password123`).
+
+---
+
+## 9. Testing & Credentials Reference
+
+For complete test scenarios, role permissions, and step-by-step guides for WebRTC calls and supervisor monitoring, see [TESTING.md](file:///c:/AI%20Calling/AI%20Calling/TESTING.md).
+
+| Role | Username | Password | Direct Portal Link |
+| :--- | :--- | :--- | :--- |
+| **Admin** | `admin` | `password123` | [#/staff-login](http://localhost:5173/#/staff-login) |
+| **Supervisor** | `supervisor` | `password123` | [#/staff-login](http://localhost:5173/#/staff-login) |
+| **Executives** | `priya`, `karan`, `farah`, `vikas`, `sneha` | `password123` | [#/staff-login](http://localhost:5173/#/staff-login) |
+| **Passengers** | `passenger1` to `passenger5` | `password123` | [#/passenger](http://localhost:5173/#/passenger) |
+| **Guest Simulator**| *(None required)* | *(None)* | [#/customer](http://localhost:5173/#/customer) |
+
