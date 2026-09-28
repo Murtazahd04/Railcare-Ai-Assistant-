@@ -144,6 +144,38 @@ This guide provides a comprehensive test suite for validating all roles, portals
 
 ---
 
+### Test Case 7: Razorpay Dynamic QR Fine Generation & Payment Flow
+**Goal**: Test generating a penalty fine, creating a dynamic Razorpay payment link with scannable QR code, and verifying real-time payment reconciliation.
+
+1. **Setup**:
+   * Log into `http://localhost:5173/#/staff-login` as Executive (`priya` / `password123`).
+   * Connect an active call from `#/customer` or `#/passenger` with PNR (e.g. `4521098234` or any seeded PNR).
+2. **Step 1: Generate Fine**:
+   * Under the **Active Call** panel, click **"Generate Fine"**.
+   * Prompt 1 (*Reason*): Enter `Linen Damaged` or `Smoking in Coach`.
+   * Prompt 2 (*Amount*): Enter `500`.
+   * Prompt 3 (*Email*): Enter your test email or any test email (e.g. `test@example.com`).
+   * A toast appears: `Fine record created — ₹500 (#...)`.
+3. **Step 2: Generate Razorpay QR Code**:
+   * Click **"Generate QR"**.
+   * The **Razorpay Fine Payment QR (Test Mode)** modal pops up on screen displaying:
+     * Passenger PNR & Amount (₹500).
+     * Scannable QR code.
+     * Clickable Razorpay test payment link (e.g. `https://rzp.io/i/...`).
+4. **Step 3: Execute Payment**:
+   * Click the payment link (or scan the QR code with your mobile camera).
+   * Razorpay Test Mode checkout opens in your browser.
+   * Pay using test details:
+     * **Card**: Number `4111 1111 1111 1111`, Expiry `12/30`, CVV `123`, OTP `1234`.
+     * **UPI**: Choose UPI, enter `test@upi`, click "Success".
+     * **Netbanking**: Select any bank and click "Success".
+   * Razorpay shows "Payment Successful".
+5. **Step 4: Verify Payment Reconciliation**:
+   * Return to the Executive Dashboard.
+   * Click **"Check Payment Status"**.
+   * The system queries Razorpay's API and displays: `Payment confirmed — fine marked as paid`.
+   * In MongoDB, the fine status updates to `paid` with `paidAt` timestamp and `razorpayPaymentId`.
+
 ## 3. Environment & Service Ports Reference
 
 | Service | Port | Health Check / URL | Status Check Command |
