@@ -309,33 +309,33 @@ export default function CustomerSimulator() {
   const inRealCall = engine.status !== "idle" && !isQueued;
 
   return (
-    <div className="min-h-screen bg-[#0B1120] text-[#E7ECF6] flex items-center justify-center p-3 sm:p-6" style={{ fontFamily: "Inter, sans-serif" }}>
-      <div className="w-full max-w-md rounded-lg border border-[#24314D] bg-[#0F1728] p-4 sm:p-6 space-y-5">
+    <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 min-h-screen bg-[#F4F6FA] text-[#0F172A] flex items-center justify-center p-3 sm:p-6" style={{ fontFamily: "Inter, sans-serif" }}>
+      <div className="w-full max-w-md rounded-lg border border-[#E2E8F0] bg-[#FFFFFF] p-4 sm:p-6 space-y-5">
         <div className="flex items-center gap-2">
-          <Train size={18} className="text-[#6BA9DE]" />
+          <Train size={18} className="text-[#0284C7]" />
           <div>
             <div className="text-sm font-semibold">SRLMS · Passenger Helpline</div>
-            <div className="text-[11px] text-[#6B7A99]">AI assistant first, real executive if needed</div>
+            <div className="text-[11px] text-[#64748B]">AI assistant first, real executive if needed</div>
           </div>
         </div>
 
         {aiPhase === "topic-select" && (
           <div className="space-y-4">
             <div>
-              <label className="text-xs text-[#6B7A99]">Your name</label>
+              <label className="text-xs text-[#64748B]">Your name</label>
               <input value={name} onChange={(e) => setName(e.target.value)}
-                className="w-full mt-1 bg-[#121B2E] border border-[#24314D] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#3B82C4]/50" />
+                className="w-full mt-1 bg-[#FFFFFF] border border-[#E2E8F0] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#3B82C4]/50" />
             </div>
             <div>
-              <label className="text-xs text-[#6B7A99]">PNR (optional, helps the executive if you're transferred)</label>
+              <label className="text-xs text-[#64748B]">PNR (optional, helps the executive if you're transferred)</label>
               <input value={pnr} onChange={(e) => setPnr(e.target.value)}
-                className="w-full mt-1 bg-[#121B2E] border border-[#24314D] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#3B82C4]/50" />
+                className="w-full mt-1 bg-[#FFFFFF] border border-[#E2E8F0] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#3B82C4]/50" />
             </div>
 
             <div>
-              <div className="text-xs text-[#6B7A99] mb-2">
+              <div className="text-xs text-[#64748B] mb-2">
                 {selectedCategory ? (
-                  <button onClick={() => setSelectedCategory(null)} className="flex items-center gap-1 text-[#6BA9DE] hover:text-[#8FC0EA]">
+                  <button onClick={() => setSelectedCategory(null)} className="flex items-center gap-1 text-[#0284C7] hover:text-[#0369A1]">
                     <ArrowLeft size={12} /> Back to categories
                   </button>
                 ) : (
@@ -344,19 +344,19 @@ export default function CustomerSimulator() {
               </div>
 
               {!selectedCategory && (
-                <div className="rounded-md border border-[#24314D] overflow-hidden">
+                <div className="rounded-md border border-[#E2E8F0] overflow-hidden">
                   {[...new Set(faqTopics.map((f) => f.category))].map((cat, idx) => (
                     <button key={cat} onClick={() => setSelectedCategory(cat)}
-                      className={`w-full flex items-center justify-between px-3 py-2.5 text-xs text-left hover:bg-[#121B2E] ${idx > 0 ? "border-t border-[#1E293F]" : ""}`}>
-                      <span className="text-[#E7ECF6]">{cat}</span>
-                      <ChevronRight size={14} className="text-[#4A5675]" />
+                      className={`w-full flex items-center justify-between px-3 py-2.5 text-xs text-left hover:bg-[#FFFFFF] ${idx > 0 ? "border-t border-[#E2E8F0]" : ""}`}>
+                      <span className="text-[#0F172A]">{cat}</span>
+                      <ChevronRight size={14} className="text-[#64748B]" />
                     </button>
                   ))}
                 </div>
               )}
 
               {selectedCategory && (
-                <div className="rounded-md border border-[#24314D] overflow-hidden">
+                <div className="rounded-md border border-[#E2E8F0] overflow-hidden">
                   {faqTopics.filter((f) => f.category === selectedCategory).map((f, idx) => (
                     <IssueAccordionRow key={f.id} intent={f} isFirst={idx === 0} onChat={() => handleStartWithIssue(f.id, f.name)} />
                   ))}
@@ -374,14 +374,14 @@ export default function CustomerSimulator() {
             <div className="flex gap-2">
               <input value={customQuery} onChange={(e) => setCustomQuery(e.target.value)}
                 placeholder="Or describe your issue…"
-                className="flex-1 bg-[#121B2E] border border-[#24314D] rounded-md px-3 py-2 text-sm focus:outline-none" />
+                className="flex-1 bg-[#FFFFFF] border border-[#E2E8F0] rounded-md px-3 py-2 text-sm focus:outline-none" />
               <button onClick={handleStartWithCustomQuery}
                 className="px-3 py-2 rounded-md bg-[#2FBF71]/15 border border-[#2FBF71]/40 text-[#2FBF71] text-xs font-medium flex items-center gap-1">
                 <Phone size={13} /> Start
               </button>
             </div>
 
-            <button onClick={handleSkipToHuman} className="w-full text-[11px] text-[#6B7A99] hover:text-[#8B98B8] underline underline-offset-2">
+            <button onClick={handleSkipToHuman} className="w-full text-[11px] text-[#64748B] hover:text-[#64748B] underline underline-offset-2">
               Skip the AI, connect me to a human directly
             </button>
           </div>
@@ -389,20 +389,20 @@ export default function CustomerSimulator() {
 
         {aiPhase !== "topic-select" && !inRealCall && (
           <div className="space-y-4">
-            <div className="rounded-md border border-[#24314D] bg-[#121B2E] p-3 space-y-2 max-h-64 overflow-y-auto">
+            <div className="rounded-md border border-[#E2E8F0] bg-[#FFFFFF] p-3 space-y-2 max-h-64 overflow-y-auto">
               {transcript.map((t, i) => (
                 <div key={i} className={`flex items-start gap-2 text-xs ${t.speaker === "ai" ? "" : "flex-row-reverse text-right"}`}>
                   {t.speaker === "ai"
-                    ? <Bot size={13} className="text-[#6BA9DE] mt-0.5 shrink-0" />
-                    : <User size={13} className="text-[#8B98B8] mt-0.5 shrink-0" />}
-                  <span className={t.speaker === "ai" ? "text-[#6BA9DE]" : "text-[#C7D0E2]"}>{t.text}</span>
+                    ? <Bot size={13} className="text-[#0284C7] mt-0.5 shrink-0" />
+                    : <User size={13} className="text-[#64748B] mt-0.5 shrink-0" />}
+                  <span className={t.speaker === "ai" ? "text-[#0284C7]" : "text-[#475569]"}>{t.text}</span>
                 </div>
               ))}
-              {transcript.length === 0 && <div className="text-[11px] text-[#4A5675]">Conversation will appear here…</div>}
+              {transcript.length === 0 && <div className="text-[11px] text-[#64748B]">Conversation will appear here…</div>}
             </div>
 
             {(aiPhase === "greeting" || aiPhase === "speaking") && (
-              <div className="flex items-center gap-2 text-xs text-[#6BA9DE] justify-center py-2">
+              <div className="flex items-center gap-2 text-xs text-[#0284C7] justify-center py-2">
                 <Bot size={14} className="animate-pulse" /> AI is speaking…
               </div>
             )}
@@ -420,13 +420,13 @@ export default function CustomerSimulator() {
               <div className="space-y-2">
                 {clarifyOptions.options.map((opt) => (
                   <button key={opt.id} onClick={() => handleClarifyPick(opt)}
-                    className="w-full text-left px-3 py-2 rounded-md bg-[#121B2E] border border-[#24314D] text-xs text-[#C7D0E2] hover:bg-[#19243B]">
+                    className="w-full text-left px-3 py-2 rounded-md bg-[#FFFFFF] border border-[#E2E8F0] text-xs text-[#475569] hover:bg-[#FFFFFF]">
                     {opt.name}
-                    {opt.sampleQuestion && <div className="text-[10px] text-[#6B7A99] mt-0.5">"{opt.sampleQuestion}"</div>}
+                    {opt.sampleQuestion && <div className="text-[10px] text-[#64748B] mt-0.5">"{opt.sampleQuestion}"</div>}
                   </button>
                 ))}
                 <button onClick={handleClarifyNone}
-                  className="w-full py-2 rounded-md bg-[#19243B] border border-[#2C3B5C] text-xs text-[#8B98B8]">
+                  className="w-full py-2 rounded-md bg-[#FFFFFF] border border-[#E2E8F0] text-xs text-[#64748B]">
                   None of these
                 </button>
               </div>
@@ -437,7 +437,7 @@ export default function CustomerSimulator() {
                 <button onClick={handleConfirmYes} className="flex-1 py-2 rounded-md bg-[#2FBF71]/15 border border-[#2FBF71]/40 text-[#2FBF71] text-xs font-medium">
                   Yes, that's it
                 </button>
-                <button onClick={handleConfirmNo} className="flex-1 py-2 rounded-md bg-[#19243B] border border-[#2C3B5C] text-xs">
+                <button onClick={handleConfirmNo} className="flex-1 py-2 rounded-md bg-[#FFFFFF] border border-[#E2E8F0] text-xs">
                   No, something else
                 </button>
               </div>
@@ -466,12 +466,12 @@ export default function CustomerSimulator() {
                   value={textFallback}
                   onChange={(e) => setTextFallback(e.target.value)}
                   placeholder="Type your question…"
-                  className="flex-1 bg-[#121B2E] border border-[#24314D] rounded-md px-3 py-2 text-xs focus:outline-none"
+                  className="flex-1 bg-[#FFFFFF] border border-[#E2E8F0] rounded-md px-3 py-2 text-xs focus:outline-none"
                 />
                 <button type="submit" className="px-3 py-2 rounded-md bg-[#2FBF71]/15 border border-[#2FBF71]/40 text-[#2FBF71] text-xs font-medium">Send</button>
                 {speechRecognitionSupported && (
                   <button type="button" onClick={handleAskAnother}
-                    className="px-3 py-2 rounded-md bg-[#19243B] border border-[#2C3B5C] text-xs" title="Speak instead">
+                    className="px-3 py-2 rounded-md bg-[#FFFFFF] border border-[#E2E8F0] text-xs" title="Speak instead">
                     <Mic size={14} />
                   </button>
                 )}
@@ -482,11 +482,11 @@ export default function CustomerSimulator() {
               <div className="space-y-2">
                 {relatedQuestions.length > 0 && (
                   <div className="space-y-1.5">
-                    <div className="text-[11px] text-[#6B7A99]">Related questions</div>
+                    <div className="text-[11px] text-[#64748B]">Related questions</div>
                     <div className="flex flex-wrap gap-1.5">
                       {relatedQuestions.map((r) => (
                         <button key={r.id} onClick={() => handleRelatedQuestion(r.sampleQuestion)}
-                          className="px-2.5 py-1.5 rounded-full text-[11px] border border-[#3B82C4]/30 bg-[#3B82C4]/10 text-[#6BA9DE] hover:bg-[#3B82C4]/20">
+                          className="px-2.5 py-1.5 rounded-full text-[11px] border border-[#3B82C4]/30 bg-[#3B82C4]/10 text-[#0284C7] hover:bg-[#3B82C4]/20">
                           {r.name}
                         </button>
                       ))}
@@ -494,10 +494,10 @@ export default function CustomerSimulator() {
                   </div>
                 )}
                 <div className="flex gap-2">
-                  <button onClick={handleAskAnother} className="flex-1 py-2 rounded-md bg-[#19243B] border border-[#2C3B5C] text-xs flex items-center justify-center gap-1">
+                  <button onClick={handleAskAnother} className="flex-1 py-2 rounded-md bg-[#FFFFFF] border border-[#E2E8F0] text-xs flex items-center justify-center gap-1">
                     {speechRecognitionSupported && <Mic size={12} />} Ask something else
                   </button>
-                  <button onClick={transferToHuman} className="flex-1 py-2 rounded-md bg-[#3B82C4]/15 border border-[#3B82C4]/40 text-[#6BA9DE] text-xs flex items-center justify-center gap-1">
+                  <button onClick={transferToHuman} className="flex-1 py-2 rounded-md bg-[#3B82C4]/15 border border-[#3B82C4]/40 text-[#0284C7] text-xs flex items-center justify-center gap-1">
                     Talk to a human <ArrowRight size={12} />
                   </button>
                 </div>
@@ -511,14 +511,14 @@ export default function CustomerSimulator() {
             <div className="flex items-center gap-2 text-sm text-[#F5A623] justify-center animate-pulse">
               <Clock size={16} /> All executives are busy right now
             </div>
-            <div className="text-xs text-[#8B98B8]">
-              You're <span className="text-[#E7ECF6] font-semibold">#{engine.queueInfo?.position ?? "…"}</span> in
+            <div className="text-xs text-[#64748B]">
+              You're <span className="text-[#0F172A] font-semibold">#{engine.queueInfo?.position ?? "…"}</span> in
               line · estimated wait{" "}
-              <span className="text-[#E7ECF6] font-semibold">
+              <span className="text-[#0F172A] font-semibold">
                 ~{Math.max(1, Math.round((engine.queueInfo?.estimatedWaitSec || 0) / 60))} min
               </span>
             </div>
-            <button onClick={engine.cancelQueue} className="text-[11px] text-[#6B7A99] hover:text-[#8B98B8] underline underline-offset-2">
+            <button onClick={engine.cancelQueue} className="text-[11px] text-[#64748B] hover:text-[#64748B] underline underline-offset-2">
               Cancel and hang up
             </button>
           </div>
@@ -526,9 +526,9 @@ export default function CustomerSimulator() {
 
         {inRealCall && (
           <div className="space-y-4">
-            <div className="text-xs text-[#6B7A99]">
-              Status: <span className="text-[#E7ECF6] font-mono">{engine.status}</span>
-              {engine.peerName && <> · with <span className="text-[#6BA9DE]">{engine.peerName}</span></>}
+            <div className="text-xs text-[#64748B]">
+              Status: <span className="text-[#0F172A] font-mono">{engine.status}</span>
+              {engine.peerName && <> · with <span className="text-[#0284C7]">{engine.peerName}</span></>}
             </div>
 
             {engine.error && (
@@ -545,7 +545,7 @@ export default function CustomerSimulator() {
 
             {engine.status === "connected" && (
               <div className="flex gap-2">
-                <button onClick={engine.toggleMute} className="flex-1 py-2.5 rounded-md bg-[#19243B] border border-[#2C3B5C] text-xs flex items-center justify-center gap-1.5">
+                <button onClick={engine.toggleMute} className="flex-1 py-2.5 rounded-md bg-[#FFFFFF] border border-[#E2E8F0] text-xs flex items-center justify-center gap-1.5">
                   {engine.muted ? <MicOff size={14} /> : <Mic size={14} />} {engine.muted ? "Unmute" : "Mute"}
                 </button>
                 <button onClick={engine.endCall} className="flex-1 py-2.5 rounded-md bg-[#E5484D]/10 border border-[#E5484D]/30 text-[#E5484D] text-xs flex items-center justify-center gap-1.5">
@@ -555,16 +555,16 @@ export default function CustomerSimulator() {
             )}
 
             {engine.status === "ended" && (
-              <div className="text-center text-sm text-[#6B7A99] py-3 space-y-2">
+              <div className="text-center text-sm text-[#64748B] py-3 space-y-2">
                 <div>Call ended.</div>
                 {callRating ? (
                   <div className="flex items-center justify-center gap-1 text-[#F5A623]">
                     {Array.from({ length: callRating }).map((_, i) => <Star key={i} size={16} fill="currentColor" />)}
-                    <span className="text-xs text-[#6B7A99] ml-1">Thanks for the feedback</span>
+                    <span className="text-xs text-[#64748B] ml-1">Thanks for the feedback</span>
                   </div>
                 ) : (
                   <div className="space-y-1">
-                    <div className="text-xs text-[#8B98B8]">How was this call?</div>
+                    <div className="text-xs text-[#64748B]">How was this call?</div>
                     <div className="flex justify-center gap-1">
                       {[1, 2, 3, 4, 5].map((n) => (
                         <button key={n} onClick={() => handleRateCall(n)} disabled={callRatingSubmitting}
@@ -588,15 +588,15 @@ export default function CustomerSimulator() {
 function IssueAccordionRow({ intent, isFirst, onChat }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className={isFirst ? "" : "border-t border-[#1E293F]"}>
-      <button onClick={() => setOpen((o) => !o)} className="w-full flex items-center justify-between px-3 py-2.5 text-xs text-left hover:bg-[#121B2E]">
-        <span className="text-[#E7ECF6]">{intent.name}</span>
-        <ChevronDown size={14} className={`text-[#4A5675] transition-transform ${open ? "rotate-180" : ""}`} />
+    <div className={isFirst ? "" : "border-t border-[#E2E8F0]"}>
+      <button onClick={() => setOpen((o) => !o)} className="w-full flex items-center justify-between px-3 py-2.5 text-xs text-left hover:bg-[#FFFFFF]">
+        <span className="text-[#0F172A]">{intent.name}</span>
+        <ChevronDown size={14} className={`text-[#64748B] transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
       {open && (
         <div className="px-3 pb-3 space-y-2">
           {intent.questions?.[0] && (
-            <div className="text-[11px] text-[#6B7A99]">e.g. "{intent.questions[0]}"</div>
+            <div className="text-[11px] text-[#64748B]">e.g. "{intent.questions[0]}"</div>
           )}
           <button onClick={onChat}
             className="px-3 py-2 rounded-md bg-[#2FBF71]/15 border border-[#2FBF71]/40 text-[#2FBF71] text-[11px] font-medium">

@@ -1,9 +1,28 @@
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 import { 
   Train, User, ShieldCheck, Headphones, MessageCircle, Phone, AlertCircle, 
   CreditCard, MapPin, Heart, AlertTriangle, Globe, ChevronDown, MessageSquare,
-  Users, Settings, Siren
+  Users, Settings, Siren, Mail, Star, Languages, Shuffle
 } from "lucide-react";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+};
+const staggerContainer = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08 } },
+};
+function StarRow({ count = 5, className = "w-4 h-4" }) {
+  return (
+    <div className="flex items-center gap-0.5 text-[#F5A623]">
+      {Array.from({ length: count }).map((_, i) => (
+        <Star key={i} className={className} fill="currentColor" strokeWidth={0} />
+      ))}
+    </div>
+  );
+}
 
 /**
  * Passenger-centric landing page with:
@@ -67,12 +86,12 @@ export default function LandingPage() {
     },
     {
       title: "Need Real Help?",
-      icon: "👥",
+      icon: null,
       steps: ["AI listens to your request", "Can't solve it? Calls real staff", "Direct conversation", "Done in 2 minutes!"],
     },
     {
-      title: "In Danger? 🆘",
-      icon: "🚨",
+      title: "In Danger?",
+      icon: null,
       steps: ["Tap SOS Button", "Alert to supervisors & staff", "Email notification sent", "Help arrives instantly!"],
     },
   ];
@@ -139,7 +158,10 @@ export default function LandingPage() {
                   <Heart className="w-4 h-4 fill-current" />
                   Trusted by Railway Passengers
                 </div>
-                <p className="text-xs text-[#6B7280] mt-1">⭐⭐⭐⭐⭐ 4.8/5 - "Best Service Provided By Indian Railways"</p>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <StarRow count={5} className="w-3 h-3" />
+                  <p className="text-xs text-[#6B7280]">4.8/5 - "Best Service Provided By Indian Railways"</p>
+                </div>
                 <p className="text-xs text-[#003DA5] font-semibold mt-2">— Abizer Saifee</p>
               </div>
             </div>
@@ -157,19 +179,29 @@ export default function LandingPage() {
               { icon: "twenty-four-service_1017-30335.avif", title: "24/7 Available", desc: "Always there when you need help" },
               { icon: "instant answer.png", title: "Instant Answers", desc: "AI responds in seconds" },
               { icon: "staff_iconm.jfif", title: "Real People Too", desc: "Connect with staff when you need them" },
-              { icon: "🚨", title: "Emergency SOS", desc: "Instant alert for urgent situations" },
+              { icon: null, title: "Emergency SOS", desc: "Instant alert for urgent situations" },
             ].map((item, idx) => (
-              <div key={idx} className="bg-white border border-[#E5E7EB] rounded-lg p-6 hover:border-[#003DA5]/50 transition text-center">
+              <motion.div
+                key={idx}
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, amount: 0.3 }}
+                whileHover={{ y: -4 }}
+                className="bg-white border border-[#E5E7EB] rounded-lg p-6 hover:border-[#003DA5]/50 hover:shadow-cardHover transition text-center"
+              >
                 <div className="mb-3">
-                  {item.icon.endsWith('.avif') || item.icon.endsWith('.png') || item.icon.endsWith('.jfif') ? (
+                  {item.icon ? (
                     <img src={`/${item.icon}`} alt={item.title} className="w-16 h-16 mx-auto object-contain" />
                   ) : (
-                    <span className="text-4xl">{item.icon}</span>
+                    <div className="w-16 h-16 mx-auto rounded-full bg-red-50 flex items-center justify-center">
+                      <Siren className="w-8 h-8 text-red-500" />
+                    </div>
                   )}
                 </div>
                 <h3 className="font-bold text-base mb-2 text-[#1F2937]">{item.title}</h3>
                 <p className="text-sm text-[#6B7280]">{item.desc}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -185,7 +217,7 @@ export default function LandingPage() {
             <div className="hidden md:block absolute top-1/3 left-0 right-0 h-1 bg-gradient-to-r from-[#003DA5] via-[#FF6B35] to-transparent -z-10"></div>
 
             {[
-              { step: 1, icon: "🗣️", title: "Tell Us", desc: "Speak or type your problem in English or Hindi" },
+              { step: 1, icon: null, title: "Tell Us", desc: "Speak or type your problem in English or Hindi" },
               { step: 2, icon: "chatbot.png", title: "We Listen", desc: "AI analyzes and finds the best answer" },
               { step: 3, icon: "tick_mark.png", title: "Problem Solved", desc: "Get help in seconds or talk to a real person" },
             ].map((item, idx) => (
@@ -206,7 +238,9 @@ export default function LandingPage() {
           </div>
 
           <div className="mt-12 bg-gradient-to-r from-[#003DA5]/10 to-[#FF6B35]/10 border border-[#003DA5]/20 rounded-lg p-8 text-center">
-            <p className="text-lg font-semibold mb-2 text-[#1F2937]">Can't Find Answer? No Problem! 👥</p>
+            <p className="text-lg font-semibold mb-2 text-[#1F2937] flex items-center justify-center gap-2">
+              <Users className="w-5 h-5 text-[#003DA5]" /> Can't Find Answer? No Problem!
+            </p>
             <p className="text-[#6B7280]">AI will instantly connect you to a real support executive for direct conversation. Average wait: 2 minutes.</p>
           </div>
         </div>
@@ -251,7 +285,7 @@ export default function LandingPage() {
               { icon: "chatbot.png", role: "AI Assistant", desc: "Instant answers 24/7", color: "from-[#003DA5] to-[#0052CC]" },
               { icon: "staff_iconm.jfif", role: "Executive", desc: "Friendly staff ready to help", color: "from-[#059669] to-[#047857]" },
               { icon: "staff_iconm.jfif", role: "Supervisor", desc: "Ensures quality service", color: "from-[#7C3AED] to-[#6D28D9]" },
-              { icon: "⚙️", role: "Admin", desc: "System keeps working smooth", color: "from-[#FF6B35] to-[#E55100]" },
+              { icon: null, role: "Admin", desc: "System keeps working smooth", color: "from-[#FF6B35] to-[#E55100]" },
             ].map((team, idx) => (
               <div key={idx} className={`flex min-h-[176px] h-full flex-col items-center justify-center bg-gradient-to-br ${team.color} rounded-lg p-6 text-white text-center`}>
                 <div className="mb-3 flex h-16 items-center justify-center">
@@ -311,19 +345,21 @@ export default function LandingPage() {
       <section className="py-16 px-6 bg-gradient-to-r from-red-50 to-orange-50 border-y border-red-200">
         <div className="max-w-6xl mx-auto">
           <div className="bg-white border-2 border-red-400 rounded-lg p-8 text-center">
-            <div className="text-6xl mb-4 animate-pulse">🆘</div>
+            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center animate-pulse">
+              <Siren className="w-10 h-10 text-red-600" />
+            </div>
             <h2 className="text-3xl font-bold mb-4 text-red-600">Emergency SOS Button</h2>
             <p className="text-[#6B7280] mb-6 max-w-2xl mx-auto">
               Feel unsafe? Problem? Harassment? Press the SOS button once and help arrives immediately.
             </p>
             <div className="grid md:grid-cols-3 gap-4 mb-8">
               {[
-                "✉️ Alert email to supervisor",
-                "📞 Staff calls you immediately",
-                "🚨 Priority help (not queue)",
+                { icon: Mail, label: "Alert email to supervisor" },
+                { icon: Phone, label: "Staff calls you immediately" },
+                { icon: Siren, label: "Priority help (not queue)" },
               ].map((item, idx) => (
-                <div key={idx} className="bg-red-50 border border-red-200 rounded p-4 text-sm font-semibold text-red-700">
-                  {item}
+                <div key={idx} className="bg-red-50 border border-red-200 rounded p-4 text-sm font-semibold text-red-700 flex items-center justify-center gap-2">
+                  <item.icon className="w-4 h-4 shrink-0" /> {item.label}
                 </div>
               ))}
             </div>
@@ -363,14 +399,16 @@ export default function LandingPage() {
 
             {/* Language */}
             <div className="bg-white border border-[#E5E7EB] rounded-lg p-8 text-center hover:border-[#FF6B35]/30 transition">
-              <div className="text-5xl mb-4">🗣️</div>
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-orange-50 flex items-center justify-center">
+                <Languages className="w-8 h-8 text-[#FF6B35]" />
+              </div>
               <h3 className="text-2xl font-bold mb-4 text-[#1F2937]">Speak Your Language</h3>
               <p className="text-[#6B7280] mb-6">
                 English, हिंदी, or mixed? AI understands everything.
               </p>
               <div className="space-y-3">
-                <div className="bg-[#F3F5F7] rounded p-3 text-sm">
-                  <span className="text-[#003DA5] font-bold">English</span> | <span className="text-[#FF6B35] font-bold">हिंदी</span> | <span className="text-[#059669] font-bold">Hinglish 🔀</span>
+                <div className="bg-[#F3F5F7] rounded p-3 text-sm flex items-center justify-center gap-2 flex-wrap">
+                  <span className="text-[#003DA5] font-bold">English</span> | <span className="text-[#FF6B35] font-bold">हिंदी</span> | <span className="text-[#059669] font-bold inline-flex items-center gap-1">Hinglish <Shuffle className="w-3.5 h-3.5" /></span>
                 </div>
                 <p className="text-[#6B7280] text-xs">AI responds in whatever language you prefer</p>
               </div>
@@ -384,19 +422,25 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12 text-[#1F2937]">Trusted by Railway Passengers</h2>
 
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.3 }}
+            className="grid md:grid-cols-3 gap-6 mb-12"
+          >
             {[
-              { rating: "⭐⭐⭐⭐⭐", text: '"Best Quality Support Provided"', author: "— Haidery Saad." },
-              { rating: "⭐⭐⭐⭐⭐", text: '"Staff is incredibly helpful. Best support I\'ve had."', author: "— Murtaza Dhanerawala" },
-              { rating: "⭐⭐⭐⭐⭐", text: '"Absolutely amazing service!"', author: "— Rizwan Khan" },
+              { text: '"Best Quality Support Provided"', author: "— Haidery Saad." },
+              { text: '"Staff is incredibly helpful. Best support I\'ve had."', author: "— Murtaza Dhanerawala" },
+              { text: '"Absolutely amazing service!"', author: "— Rizwan Khan" },
             ].map((review, idx) => (
-              <div key={idx} className="bg-[#F3F5F7] border border-[#E5E7EB] rounded-lg p-6">
-                <div className="text-yellow-500 mb-3">{review.rating}</div>
+              <motion.div key={idx} variants={fadeUp} className="bg-[#F3F5F7] border border-[#E5E7EB] rounded-lg p-6">
+                <StarRow className="mb-3 w-4 h-4" />
                 <p className="text-[#4B5563] mb-3 italic">{review.text}</p>
                 <p className="text-sm font-semibold text-[#003DA5]">{review.author}</p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
 
           <div className="text-center">
             <p className="text-[#6B7280] mb-6">Backed by Indian Railways Ministry</p>

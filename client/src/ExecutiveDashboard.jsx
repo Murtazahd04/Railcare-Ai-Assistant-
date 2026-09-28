@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { motion } from "framer-motion";
 import { io } from "socket.io-client";
 import {
   Phone, TrendingUp, AlertCircle, FileText, QrCode, StickyNote, Train,
-  CheckCircle2, XCircle, Search, LogOut, Tag, Ticket, Trash2, PhoneCall,
+  CheckCircle2, XCircle, Search, LogOut, Tag, Ticket, Trash2, PhoneCall, Siren,
 } from "lucide-react";
 import { useCallEngine } from "./useCallEngine";
 import ExecutiveLiveCallPanel from "./ExecutiveLiveCallPanel";
@@ -18,7 +19,7 @@ function fmtDuration(sec) {
 }
 
 const STATUS_META = {
-  completed: { label: "Completed", text: "text-[#5B6B8C]" },
+  completed: { label: "Completed", text: "text-[#64748B]" },
   missed: { label: "Missed", text: "text-[#E5484D]" },
   transferred: { label: "Transferred", text: "text-[#F5A623]" },
   rejected: { label: "Declined", text: "text-[#E5484D]" },
@@ -26,21 +27,25 @@ const STATUS_META = {
 
 function KpiCard({ icon: Icon, label, value, sub }) {
   return (
-    <div className="flex-1 min-w-[150px] rounded-lg bg-[#121B2E] border border-[#24314D] p-4">
+    <motion.div
+      whileHover={{ y: -3, boxShadow: "0 8px 20px -6px rgba(0,61,165,0.15)" }}
+      transition={{ duration: 0.18 }}
+      className="flex-1 min-w-[150px] rounded-lg bg-[#FFFFFF] border border-[#E2E8F0] p-4"
+    >
       <div className="flex items-center justify-between mb-2">
-        <span className="text-[11px] uppercase tracking-wider text-[#6B7A99] font-medium">{label}</span>
+        <span className="text-[11px] uppercase tracking-wider text-[#64748B] font-medium">{label}</span>
         <Icon size={15} className="text-[#3B82C4]" />
       </div>
-      <div className="font-mono text-2xl text-[#E7ECF6] font-semibold leading-none">{value}</div>
-      {sub && <div className="text-[11px] text-[#6B7A99] mt-1.5">{sub}</div>}
-    </div>
+      <div className="font-mono text-2xl text-[#0F172A] font-semibold leading-none">{value}</div>
+      {sub && <div className="text-[11px] text-[#64748B] mt-1.5">{sub}</div>}
+    </motion.div>
   );
 }
 
 function ActionButton({ icon: Icon, label, onClick, tone = "default", disabled }) {
   const tones = {
-    default: "bg-[#19243B] hover:bg-[#212F4D] text-[#C7D0E2] border-[#2C3B5C]",
-    primary: "bg-[#3B82C4]/15 hover:bg-[#3B82C4]/25 text-[#6BA9DE] border-[#3B82C4]/40",
+    default: "bg-[#FFFFFF] hover:bg-[#FFFFFF] text-[#475569] border-[#E2E8F0]",
+    primary: "bg-[#3B82C4]/15 hover:bg-[#3B82C4]/25 text-[#0284C7] border-[#3B82C4]/40",
     warn: "bg-[#F5A623]/10 hover:bg-[#F5A623]/20 text-[#F5A623] border-[#F5A623]/30",
   };
   return (
@@ -187,7 +192,7 @@ export default function ExecutiveDashboard({ user, token, onLogout }) {
   useEffect(() => {
     const onSos = (alert) => {
       setSosAlerts((prev) => [{ ...alert, id: `${alert.at}-${alert.customerName}` }, ...prev]);
-      pushToast(`🚨 SOS from ${alert.customerName}${alert.pnr ? ` (PNR ${alert.pnr})` : ""}`, "danger");
+      pushToast(`SOS from ${alert.customerName}${alert.pnr ? ` (PNR ${alert.pnr})` : ""}`, "danger");
     };
     socket.on("sos:alert", onSos);
     return () => socket.off("sos:alert", onSos);
@@ -362,7 +367,7 @@ export default function ExecutiveDashboard({ user, token, onLogout }) {
     try {
       const data = await apiPost(`/fines/${fineId}/razorpay-status`, {});
       if (data.razorpayStatus === "paid") {
-        pushToast("Payment confirmed — fine marked as paid ✅", "primary");
+        pushToast("Payment confirmed — fine marked as paid", "primary");
       } else {
         pushToast(`Not paid yet (Razorpay status: ${data.razorpayStatus})`, "warn");
       }
@@ -431,24 +436,24 @@ export default function ExecutiveDashboard({ user, token, onLogout }) {
   );
 
   return (
-    <div className="min-h-screen w-full bg-[#0B1120] text-[#E7ECF6]" style={{ fontFamily: "Inter, sans-serif" }}>
-      <div className="border-b border-[#1E293F] px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-2">
+    <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 min-h-screen w-full bg-[#F4F6FA] text-[#0F172A]" style={{ fontFamily: "Inter, sans-serif" }}>
+      <div className="border-b border-[#E2E8F0] px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-3">
           <img src={LOGO_DATA_URI} alt="SRLMS" className="h-10 w-10 rounded-md object-contain bg-white/95 p-1 border border-[#3B82C4]/40" />
           <div>
             <div className="text-sm font-semibold tracking-tight">SRLMS Contact Center</div>
-            <div className="text-[11px] text-[#6B7A99] font-mono">Executive Console</div>
+            <div className="text-[11px] text-[#64748B] font-mono">Executive Console</div>
           </div>
         </div>
-        <div className="flex items-center gap-3 text-xs text-[#6B7A99]">
+        <div className="flex items-center gap-3 text-xs text-[#64748B]">
           <span className="relative flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full rounded-full bg-[#2FBF71] opacity-70 animate-ping" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-[#2FBF71]" />
           </span>
           Live · real data only · auto-syncing every 15s
-          {user?.name && <span className="text-[#8B98B8]">· {user.name}</span>}
+          {user?.name && <span className="text-[#64748B]">· {user.name}</span>}
           {onLogout && (
-            <button onClick={onLogout} className="ml-1 flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-[#2C3B5C] bg-[#19243B] hover:bg-[#212F4D] text-[#C7D0E2]">
+            <button onClick={onLogout} className="ml-1 flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-[#E2E8F0] bg-[#FFFFFF] hover:bg-[#FFFFFF] text-[#475569]">
               <LogOut size={12} /> Log out
             </button>
           )}
@@ -460,7 +465,7 @@ export default function ExecutiveDashboard({ user, token, onLogout }) {
           {sosAlerts.map((a) => (
             <div key={a.id} className="flex items-center justify-between gap-3 px-4 py-3 rounded-md bg-[#E5484D]/15 border border-[#E5484D]/50 text-[#E5484D] text-xs animate-pulse">
               <div className="flex items-center gap-2 font-semibold">
-                🚨 SOS — {a.customerName}{a.pnr ? ` (PNR ${a.pnr})` : ""} · {new Date(a.at).toLocaleTimeString()}
+                <Siren className="w-4 h-4 shrink-0" /> SOS — {a.customerName}{a.pnr ? ` (PNR ${a.pnr})` : ""} · {new Date(a.at).toLocaleTimeString()}
               </div>
               <button onClick={() => setSosAlerts((prev) => prev.filter((x) => x.id !== a.id))} className="text-[#E5484D] underline underline-offset-2 shrink-0">
                 Dismiss
@@ -481,26 +486,26 @@ export default function ExecutiveDashboard({ user, token, onLogout }) {
       <div className="px-4 sm:px-6 py-5 space-y-5">
         <ExecutiveLiveCallPanel engine={engine} token={token} />
 
-        <div className="rounded-lg border border-[#24314D] bg-[#0F1728] p-4 space-y-3">
-          <div className="text-xs font-medium uppercase tracking-wider text-[#6B7A99]">Customer Lookup</div>
+        <div className="rounded-lg border border-[#E2E8F0] bg-[#FFFFFF] p-4 space-y-3">
+          <div className="text-xs font-medium uppercase tracking-wider text-[#64748B]">Customer Lookup</div>
           <form onSubmit={runLookup} className="flex gap-2">
             <input
               value={lookupQuery}
               onChange={(e) => setLookupQuery(e.target.value)}
               placeholder="Search by name, PNR, or mobile number…"
-              className="flex-1 bg-[#121B2E] border border-[#24314D] rounded-md px-3 py-2 text-xs placeholder:text-[#4A5675] focus:outline-none"
+              className="flex-1 bg-[#FFFFFF] border border-[#E2E8F0] rounded-md px-3 py-2 text-xs placeholder:text-[#64748B] focus:outline-none"
             />
             <ActionButton icon={Search} label={lookupLoading ? "Searching…" : "Search"} onClick={runLookup} disabled={lookupLoading} />
           </form>
           {lookupResults.length > 0 && (
             <div className="space-y-1.5">
               {lookupResults.map((p) => (
-                <div key={p._id} className="flex flex-wrap items-center justify-between gap-2 rounded-md bg-[#121B2E] border border-[#24314D] px-3 py-2 text-[11px]">
+                <div key={p._id} className="flex flex-wrap items-center justify-between gap-2 rounded-md bg-[#FFFFFF] border border-[#E2E8F0] px-3 py-2 text-[11px]">
                   <div>
-                    <span className="text-[#E7ECF6] font-medium">{p.name}</span>{" "}
-                    <span className="text-[#6B7A99] font-mono">· {p.mobile}</span>
+                    <span className="text-[#0F172A] font-medium">{p.name}</span>{" "}
+                    <span className="text-[#64748B] font-mono">· {p.mobile}</span>
                   </div>
-                  <div className="flex items-center gap-3 text-[#8B98B8]">
+                  <div className="flex items-center gap-3 text-[#64748B]">
                     <span className="flex items-center gap-1 font-mono"><Ticket size={11} /> {p.pnr}</span>
                     <span className="flex items-center gap-1"><Train size={11} /> {p.trainNumber} · {p.coach} · Berth {p.berth}</span>
                   </div>
@@ -509,29 +514,29 @@ export default function ExecutiveDashboard({ user, token, onLogout }) {
             </div>
           )}
           {lookupResults.length === 0 && lookupQuery && !lookupLoading && (
-            <div className="text-[11px] text-[#4A5675]">No matching customer found.</div>
+            <div className="text-[11px] text-[#64748B]">No matching customer found.</div>
           )}
         </div>
 
         {canAct && (
-          <div className="rounded-lg border border-[#24314D] bg-[#0F1728] p-4 space-y-3">
+          <div className="rounded-lg border border-[#E2E8F0] bg-[#FFFFFF] p-4 space-y-3">
             <div className="flex items-center justify-between">
               <div className="text-sm">
-                Active call — <span className="text-[#6BA9DE]">{passengerName}</span>
+                Active call — <span className="text-[#0284C7]">{passengerName}</span>
               </div>
-              <div className="flex gap-3 text-[11px] text-[#8B98B8]">
+              <div className="flex gap-3 text-[11px] text-[#64748B]">
                 {topic && <span className="flex items-center gap-1"><Tag size={11} /> {topic}</span>}
                 {pnr && <span className="flex items-center gap-1 font-mono"><Ticket size={11} /> {pnr}</span>}
               </div>
             </div>
-            <div className="text-[11px] text-[#6B7A99]">
+            <div className="text-[11px] text-[#64748B]">
               {activePassengerEmail === undefined && pnr && "Checking passenger email…"}
-              {activePassengerEmail && <>Email on file: <span className="font-mono text-[#8B98B8]">{activePassengerEmail}</span></>}
+              {activePassengerEmail && <>Email on file: <span className="font-mono text-[#64748B]">{activePassengerEmail}</span></>}
               {activePassengerEmail === null && pnr && "No email on file — you'll be asked to enter one when generating a fine's QR."}
             </div>
             <div className="flex flex-wrap gap-2">
-              <ActionButton icon={AlertCircle} label={complaintId ? "Complaint Filed ✓" : "Create Complaint"} onClick={handleComplaint} disabled={!!complaintId} />
-              <ActionButton icon={FileText} label={fineId ? `Fine Created ✓ ₹${fineAmount}` : "Generate Fine"} onClick={handleFine} disabled={!!fineId} tone="warn" />
+              <ActionButton icon={AlertCircle} label={complaintId ? "Complaint Filed" : "Create Complaint"} onClick={handleComplaint} disabled={!!complaintId} />
+              <ActionButton icon={FileText} label={fineId ? `Fine Created — ₹${fineAmount}` : "Generate Fine"} onClick={handleFine} disabled={!!fineId} tone="warn" />
               <ActionButton icon={QrCode} label="Generate QR" onClick={handleQR} disabled={!fineId} />
               <ActionButton icon={PhoneCall} label="Call Passenger" onClick={handleCallPassenger} disabled={!pnr} />
               <ActionButton icon={CheckCircle2} label="Check Payment Status" onClick={handleCheckPaymentStatus} disabled={!fineId} />
@@ -541,30 +546,30 @@ export default function ExecutiveDashboard({ user, token, onLogout }) {
                 value={noteDraft}
                 onChange={(e) => setNoteDraft(e.target.value)}
                 placeholder="Add a note to this call…"
-                className="flex-1 bg-[#121B2E] border border-[#24314D] rounded-md px-3 py-2 text-xs placeholder:text-[#4A5675] focus:outline-none"
+                className="flex-1 bg-[#FFFFFF] border border-[#E2E8F0] rounded-md px-3 py-2 text-xs placeholder:text-[#64748B] focus:outline-none"
               />
               <ActionButton icon={StickyNote} label="Add" onClick={handleAddNote} />
             </div>
           </div>
         )}
 
-        <div className="rounded-lg border border-[#24314D] bg-[#0F1728] overflow-hidden">
-          <div className="px-4 py-3 border-b border-[#1E293F] flex items-center justify-between">
-            <span className="text-xs font-medium uppercase tracking-wider text-[#6B7A99]">Call History (real data)</span>
-            <div className="flex items-center gap-2 bg-[#121B2E] border border-[#24314D] rounded-md px-2 py-1.5">
-              <Search size={13} className="text-[#4A5675]" />
+        <div className="rounded-lg border border-[#E2E8F0] bg-[#FFFFFF] overflow-hidden">
+          <div className="px-4 py-3 border-b border-[#E2E8F0] flex items-center justify-between">
+            <span className="text-xs font-medium uppercase tracking-wider text-[#64748B]">Call History (real data)</span>
+            <div className="flex items-center gap-2 bg-[#FFFFFF] border border-[#E2E8F0] rounded-md px-2 py-1.5">
+              <Search size={13} className="text-[#64748B]" />
               <input
                 value={historyFilter}
                 onChange={(e) => setHistoryFilter(e.target.value)}
                 placeholder="Search passenger, call ID, topic…"
-                className="bg-transparent text-xs focus:outline-none placeholder:text-[#4A5675] w-56"
+                className="bg-transparent text-xs focus:outline-none placeholder:text-[#64748B] w-56"
               />
             </div>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
-                <tr className="text-[#6B7A99] border-b border-[#1E293F]">
+                <tr className="text-[#64748B] border-b border-[#E2E8F0]">
                   <th className="text-left font-medium px-4 py-2">Call ID</th>
                   <th className="text-left font-medium px-4 py-2">Passenger</th>
                   <th className="text-left font-medium px-4 py-2">Topic / Intent</th>
@@ -577,35 +582,35 @@ export default function ExecutiveDashboard({ user, token, onLogout }) {
               </thead>
               <tbody>
                 {filteredHistory.map((c) => {
-                  const meta = STATUS_META[c.status] || { label: c.status, text: "text-[#8B98B8]" };
+                  const meta = STATUS_META[c.status] || { label: c.status, text: "text-[#64748B]" };
                   return (
-                    <tr key={c.callId} className="border-b border-[#161F35] hover:bg-[#121B2E] cursor-pointer" onClick={() => setDetailModal(c)}>
-                      <td className="px-4 py-2 font-mono text-[#8B98B8]">{c.callId}</td>
+                    <tr key={c.callId} className="border-b border-[#E2E8F0] hover:bg-[#FFFFFF] cursor-pointer" onClick={() => setDetailModal(c)}>
+                      <td className="px-4 py-2 font-mono text-[#64748B]">{c.callId}</td>
                       <td className="px-4 py-2">{c.customerName}</td>
-                      <td className="px-4 py-2 text-[#8B98B8]">{c.topic || c.aiIntent || c.intent || "—"}</td>
-                      <td className="px-4 py-2 text-[#8B98B8] capitalize">{c.source || "webrtc"}</td>
+                      <td className="px-4 py-2 text-[#64748B]">{c.topic || c.aiIntent || c.intent || "—"}</td>
+                      <td className="px-4 py-2 text-[#64748B] capitalize">{c.source || "webrtc"}</td>
                       <td className="px-4 py-2 font-mono">{fmtDuration(c.durationSec || 0)}</td>
                       <td className="px-4 py-2">
                         <span className={meta.text}>{meta.label}</span>
                       </td>
                       <td className="px-4 py-2">
-                        <button onClick={(e) => { e.stopPropagation(); playRecording(c.callId); }} className="text-[11px] text-[#6BA9DE] hover:text-[#8FC0EA] underline underline-offset-2">
+                        <button onClick={(e) => { e.stopPropagation(); playRecording(c.callId); }} className="text-[11px] text-[#0284C7] hover:text-[#0369A1] underline underline-offset-2">
                           {playingCallId === c.callId ? "Stop" : "Play"}
                         </button>
                       </td>
-                      <td className="px-4 py-2 text-[#6B7A99] text-[11px]">View details →</td>
+                      <td className="px-4 py-2 text-[#64748B] text-[11px]">View details →</td>
                     </tr>
                   );
                 })}
                 {filteredHistory.length === 0 && (
-                  <tr><td colSpan={7} className="px-4 py-6 text-center text-[#4A5675]">No calls yet — real calls will appear here once placed.</td></tr>
+                  <tr><td colSpan={7} className="px-4 py-6 text-center text-[#64748B]">No calls yet — real calls will appear here once placed.</td></tr>
                 )}
               </tbody>
             </table>
           </div>
           {playingCallId && recordingUrl && (
-            <div className="px-4 py-3 border-t border-[#1E293F] flex items-center gap-3">
-              <span className="text-[11px] text-[#6B7A99] font-mono">Playing {playingCallId}</span>
+            <div className="px-4 py-3 border-t border-[#E2E8F0] flex items-center gap-3">
+              <span className="text-[11px] text-[#64748B] font-mono">Playing {playingCallId}</span>
               <audio controls autoPlay src={recordingUrl} className="h-8 flex-1" />
             </div>
           )}
@@ -614,21 +619,21 @@ export default function ExecutiveDashboard({ user, token, onLogout }) {
 
       {detailModal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => setDetailModal(null)}>
-          <div className="bg-[#0F1728] border border-[#24314D] rounded-lg p-5 max-w-lg w-full max-h-[85vh] overflow-y-auto space-y-4" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-lg p-5 max-w-lg w-full max-h-[85vh] overflow-y-auto space-y-4" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between">
               <div className="text-sm font-semibold">Call {detailModal.callId}</div>
-              <button onClick={() => setDetailModal(null)} className="text-[#6B7A99] hover:text-[#8B98B8] text-xs">Close ✕</button>
+              <button onClick={() => setDetailModal(null)} className="text-[#64748B] hover:text-[#64748B] text-xs">Close</button>
             </div>
 
             {/* Passenger profile */}
             {detailModal.customerPnr && (
               detailProfile ? (
-                <div className="rounded-md bg-[#121B2E] border border-[#24314D] p-3 space-y-2 text-xs">
-                  <div className="text-[#E7ECF6] font-medium">{detailProfile.passenger.name} <span className="text-[#6B7A99] font-mono">· {detailProfile.passenger.mobile}</span></div>
-                  <div className="text-[#8B98B8]">
+                <div className="rounded-md bg-[#FFFFFF] border border-[#E2E8F0] p-3 space-y-2 text-xs">
+                  <div className="text-[#0F172A] font-medium">{detailProfile.passenger.name} <span className="text-[#64748B] font-mono">· {detailProfile.passenger.mobile}</span></div>
+                  <div className="text-[#64748B]">
                     PNR {detailProfile.passenger.pnr} · Train {detailProfile.passenger.trainNumber} · Coach {detailProfile.passenger.coach} · Berth {detailProfile.passenger.berth}
                   </div>
-                  <div className="text-[#8B98B8]">
+                  <div className="text-[#64748B]">
                     {detailProfile.complaints.length} prior complaint(s) · {detailProfile.fines.filter((f) => f.status !== "paid").length} unpaid fine(s)
                   </div>
 
@@ -637,20 +642,20 @@ export default function ExecutiveDashboard({ user, token, onLogout }) {
                       without them repeating themselves. */}
                   {detailProfile.calls?.length > 0 && (
                     <div className="pt-1">
-                      <div className="text-[11px] text-[#6B7A99] mb-1">Past AI chats & calls ({detailProfile.calls.length})</div>
+                      <div className="text-[11px] text-[#64748B] mb-1">Past AI chats & calls ({detailProfile.calls.length})</div>
                       <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
                         {detailProfile.calls.map((c) => (
-                          <div key={c.callId} className="bg-[#0F1728] border border-[#1E293F] rounded-md px-2.5 py-1.5">
-                            <div className="flex items-center justify-between text-[10px] text-[#6B7A99]">
+                          <div key={c.callId} className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-md px-2.5 py-1.5">
+                            <div className="flex items-center justify-between text-[10px] text-[#64748B]">
                               <span>{new Date(c.createdAt).toLocaleString()}</span>
                               <span className="capitalize">{c.status}</span>
                             </div>
-                            <div className="text-[#C7D0E2]">{c.topic || c.aiIntent || "General query"}</div>
+                            <div className="text-[#475569]">{c.topic || c.aiIntent || "General query"}</div>
                             {c.aiTranscript?.length > 0 && (
                               <div className="mt-1 space-y-0.5">
                                 {c.aiTranscript.slice(0, 4).map((t, i) => (
-                                  <div key={i} className="text-[10px] text-[#8B98B8] truncate">
-                                    <span className={t.speaker === "customer" ? "text-[#6BA9DE]" : "text-[#6B7A99]"}>{t.speaker === "customer" ? "Passenger" : "AI"}:</span> {t.text}
+                                  <div key={i} className="text-[10px] text-[#64748B] truncate">
+                                    <span className={t.speaker === "customer" ? "text-[#0284C7]" : "text-[#64748B]"}>{t.speaker === "customer" ? "Passenger" : "AI"}:</span> {t.text}
                                   </div>
                                 ))}
                               </div>
@@ -672,14 +677,14 @@ export default function ExecutiveDashboard({ user, token, onLogout }) {
                   </button>
                 </div>
               ) : (
-                <div className="text-[11px] text-[#6B7A99]">Looking up passenger for PNR {detailModal.customerPnr}…</div>
+                <div className="text-[11px] text-[#64748B]">Looking up passenger for PNR {detailModal.customerPnr}…</div>
               )
             )}
 
             {/* Recording */}
             {detailModal.recordingFileId && (
               <div>
-                <div className="text-[11px] text-[#6B7A99] mb-1">Recording</div>
+                <div className="text-[11px] text-[#64748B] mb-1">Recording</div>
                 <audio controls src={`${API_BASE}/calls/${detailModal.callId}/recording`} className="w-full h-8" />
               </div>
             )}
@@ -687,10 +692,10 @@ export default function ExecutiveDashboard({ user, token, onLogout }) {
             {/* Written AI conversation before transfer/resolution */}
             {detailModal.aiTranscript?.length > 0 && (
               <div>
-                <div className="text-[11px] text-[#6B7A99] mb-1.5">AI conversation (written)</div>
+                <div className="text-[11px] text-[#64748B] mb-1.5">AI conversation (written)</div>
                 <div className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
                   {detailModal.aiTranscript.map((t, i) => (
-                    <div key={i} className={`text-[11px] px-2.5 py-1.5 rounded-md max-w-[85%] ${t.speaker === "customer" ? "bg-[#3B82C4]/15 text-[#6BA9DE] ml-auto" : "bg-[#19243B] text-[#C7D0E2]"}`}>
+                    <div key={i} className={`text-[11px] px-2.5 py-1.5 rounded-md max-w-[85%] ${t.speaker === "customer" ? "bg-[#3B82C4]/15 text-[#0284C7] ml-auto" : "bg-[#FFFFFF] text-[#475569]"}`}>
                       {t.text}
                     </div>
                   ))}
@@ -701,10 +706,10 @@ export default function ExecutiveDashboard({ user, token, onLogout }) {
             {/* Executive notes */}
             {detailModal.notes?.length > 0 && (
               <div>
-                <div className="text-[11px] text-[#6B7A99] mb-1.5">Executive notes</div>
+                <div className="text-[11px] text-[#64748B] mb-1.5">Executive notes</div>
                 <div className="space-y-1">
                   {detailModal.notes.map((n, i) => (
-                    <div key={i} className="text-[11px] text-[#C7D0E2] bg-[#121B2E] border border-[#24314D] rounded-md px-2.5 py-1.5">{n.text}</div>
+                    <div key={i} className="text-[11px] text-[#475569] bg-[#FFFFFF] border border-[#E2E8F0] rounded-md px-2.5 py-1.5">{n.text}</div>
                   ))}
                 </div>
               </div>
@@ -715,16 +720,16 @@ export default function ExecutiveDashboard({ user, token, onLogout }) {
 
       {qrModal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={() => setQrModal(null)}>
-          <div className="bg-[#0F1728] border border-[#24314D] rounded-lg p-6 max-w-xs w-full text-center space-y-3" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-lg p-6 max-w-xs w-full text-center space-y-3" onClick={(e) => e.stopPropagation()}>
             <div className="text-sm font-semibold">Razorpay Fine Payment QR (test mode)</div>
-            <div className="text-[11px] text-[#6B7A99] font-mono">PNR {qrModal.pnr} · ₹{qrModal.amount}</div>
+            <div className="text-[11px] text-[#64748B] font-mono">PNR {qrModal.pnr} · ₹{qrModal.amount}</div>
             <img src={qrModal.url} alt="Razorpay Payment QR" className="mx-auto rounded-md bg-white p-2" />
             {qrModal.paymentLinkUrl && (
-              <a href={qrModal.paymentLinkUrl} target="_blank" rel="noreferrer" className="block text-[10px] text-[#6BA9DE] break-all hover:underline">
+              <a href={qrModal.paymentLinkUrl} target="_blank" rel="noreferrer" className="block text-[10px] text-[#0284C7] break-all hover:underline">
                 {qrModal.paymentLinkUrl}
               </a>
             )}
-            <button onClick={() => setQrModal(null)} className="w-full py-2 rounded-md bg-[#19243B] border border-[#2C3B5C] text-xs text-[#C7D0E2]">Close</button>
+            <button onClick={() => setQrModal(null)} className="w-full py-2 rounded-md bg-[#FFFFFF] border border-[#E2E8F0] text-xs text-[#475569]">Close</button>
           </div>
         </div>
       )}
@@ -734,11 +739,11 @@ export default function ExecutiveDashboard({ user, token, onLogout }) {
           const toneClass = {
             danger: "border-[#E5484D]/40 text-[#E5484D]",
             warn: "border-[#F5A623]/40 text-[#F5A623]",
-            primary: "border-[#3B82C4]/40 text-[#6BA9DE]",
-            default: "border-[#2C3B5C] text-[#E7ECF6]",
+            primary: "border-[#3B82C4]/40 text-[#0284C7]",
+            default: "border-[#E2E8F0] text-[#0F172A]",
           }[t.tone || "default"];
           return (
-            <div key={t.id} className={`px-4 py-2.5 rounded-md border bg-[#131C2E] text-xs shadow-lg ${toneClass}`}>
+            <div key={t.id} className={`px-4 py-2.5 rounded-md border bg-[#FFFFFF] text-xs shadow-lg ${toneClass}`}>
               {t.msg}
             </div>
           );

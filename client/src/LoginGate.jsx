@@ -28,28 +28,28 @@ export default function LoginGate({ onLoggedIn }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B1120] text-[#E7ECF6] flex items-center justify-center p-6" style={{ fontFamily: "Inter, sans-serif" }}>
-      <form onSubmit={handleSubmit} className="w-full max-w-sm rounded-lg border border-[#24314D] bg-[#0F1728] p-6 space-y-4">
+    <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 min-h-screen bg-[#F4F6FA] text-[#0F172A] flex items-center justify-center p-6" style={{ fontFamily: "Inter, sans-serif" }}>
+      <form onSubmit={handleSubmit} className="w-full max-w-sm rounded-lg border border-[#E2E8F0] bg-[#FFFFFF] p-6 space-y-4">
         <div className="flex items-center gap-2 mb-2">
-          <Train size={18} className="text-[#6BA9DE]" />
+          <Train size={18} className="text-[#0284C7]" />
           <div className="text-sm font-semibold">SRLMS Executive Console</div>
         </div>
 
         <div>
-          <label className="text-xs text-[#6B7A99]">Username</label>
+          <label className="text-xs text-[#64748B]">Username</label>
           <input
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="w-full mt-1 bg-[#121B2E] border border-[#24314D] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#3B82C4]/50"
+            className="w-full mt-1 bg-[#FFFFFF] border border-[#E2E8F0] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#3B82C4]/50"
           />
         </div>
         <div>
-          <label className="text-xs text-[#6B7A99]">Password</label>
+          <label className="text-xs text-[#64748B]">Password</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full mt-1 bg-[#121B2E] border border-[#24314D] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#3B82C4]/50"
+            className="w-full mt-1 bg-[#FFFFFF] border border-[#E2E8F0] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#3B82C4]/50"
           />
         </div>
 
@@ -62,15 +62,15 @@ export default function LoginGate({ onLoggedIn }) {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-2 rounded-md bg-[#3B82C4]/20 border border-[#3B82C4]/40 text-[#6BA9DE] text-sm font-medium hover:bg-[#3B82C4]/30 disabled:opacity-50"
+          className="w-full py-2 rounded-md bg-[#3B82C4]/20 border border-[#3B82C4]/40 text-[#0284C7] text-sm font-medium hover:bg-[#3B82C4]/30 disabled:opacity-50"
         >
           {loading ? "Signing in…" : "Sign in"}
         </button>
 
-        <div className="text-[11px] text-[#6B7A99] text-center">
+        <div className="text-[11px] text-[#64748B] text-center">
           Demo accounts: admin · supervisor · priya · karan · farah · vikas · sneha — password: password123
         </div>
-        <a href="#/" className="block text-[11px] text-[#6B7A99] hover:text-[#8B98B8] text-center underline underline-offset-2">← Back to home</a>
+        <a href="#/" className="block text-[11px] text-[#64748B] hover:text-[#64748B] text-center underline underline-offset-2">← Back to home</a>
       </form>
     </div>
   );

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { io } from "socket.io-client";
 import { useCallEngine } from "./useCallEngine";
 import { speak, listen as listenOnce, speechRecognitionSupported } from "./voice";
@@ -8,7 +9,8 @@ import {
   Bot, User, Loader2, Clock, ArrowRight, ArrowLeft, CheckCircle2, X, MicOff,
   HelpCircle, PhoneForwarded, AlertTriangle, Menu, Palette, Sun, Moon,
   Sparkles, Shield, Send, Eye, EyeOff, ChevronRight, RefreshCw, Volume2,
-  Calendar, MapPin, Ticket, Compass, Layers, Lock, ChevronDown
+  Calendar, MapPin, Ticket, Compass, Layers, Lock, ChevronDown,
+  Bed, Map, CreditCard, UtensilsCrossed, ClipboardList, Siren, Zap
 } from "lucide-react";
 
 import { SIGNALING_URL, API_BASE } from "./config";
@@ -511,17 +513,21 @@ export default function PassengerPortal() {
 
   // Category icons map
   const CAT_ICONS = {
-    "Linen Issues": "🛏️",
-    "Customer's Choice": "⭐",
-    "Coach & Safety": "🚂",
-    "Journey Info": "🗺️",
-    "Fines & Payments": "💳",
-    "E-Catering & Station Assistance": "🍱",
-    "Policy & General FAQ": "📋",
-    "General": "💬",
+    "Linen Issues": Bed,
+    "Customer's Choice": Star,
+    "Coach & Safety": Train,
+    "Journey Info": Map,
+    "Fines & Payments": CreditCard,
+    "E-Catering & Station Assistance": UtensilsCrossed,
+    "Policy & General FAQ": ClipboardList,
+    "General": MessageCircle,
   };
   function getCatIcon(name) {
-    return CAT_ICONS[name] || "💬";
+    return CAT_ICONS[name] || MessageCircle;
+  }
+  function CatIcon({ name, className = "w-5 h-5" }) {
+    const Icon = getCatIcon(name);
+    return <Icon className={className} />;
   }
 
   async function processQuery(text, rejectedIntentIds = []) {
@@ -649,7 +655,7 @@ export default function PassengerPortal() {
     pushTranscript("customer", "EMERGENCY SOS PRESSED");
     pushTranscript("ai", "Emergency alert received. Ringing all available support executives and operations staff immediately.");
     engine.placeCall({
-      topic: "🚨 EMERGENCY SOS",
+      topic: "EMERGENCY SOS",
       pnr,
       transcript: transcriptRef.current,
       isEmergency: true,
@@ -998,8 +1004,8 @@ export default function PassengerPortal() {
 
                     {/* Quick Demo Autofill Helper */}
                     <div className="pt-2 border-t border-[#E2E8F0] dark:border-[#1E293B] space-y-2">
-                      <div className="text-[11px] font-semibold text-[#64748B] dark:text-[#94A3B8] text-center">
-                        ⚡ Quick Demo Accounts (Click to Fill):
+                      <div className="text-[11px] font-semibold text-[#64748B] dark:text-[#94A3B8] text-center flex items-center justify-center gap-1">
+                        <Zap className="w-3 h-3" /> Quick Demo Accounts (Click to Fill):
                       </div>
                       <div className="flex flex-wrap items-center justify-center gap-1.5">
                         {["passenger1", "passenger2", "passenger3", "passenger4"].map((demo) => (
@@ -1248,7 +1254,7 @@ export default function PassengerPortal() {
                         : `${theme.sidebarHover} ${theme.textSecondary}`
                     }`}
                   >
-                    <span className="text-xl leading-none w-6 text-center">{getCatIcon(cat.name)}</span>
+                    <span className="w-6 flex items-center justify-center"><CatIcon name={cat.name} className="w-5 h-5" /></span>
                     <span className="flex-1 leading-snug">{tCat(cat.name)}</span>
                     <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${
                       activeFaqCategory === cat.name ? "bg-white/20" : theme.innerBg
@@ -1297,7 +1303,7 @@ export default function PassengerPortal() {
                         : `${theme.sidebarHover} ${theme.textSecondary}`
                     }`}
                   >
-                    <span className="text-lg leading-none w-6 text-center">{getCatIcon(cat.name)}</span>
+                    <span className="w-6 flex items-center justify-center"><CatIcon name={cat.name} className="w-[18px] h-[18px]" /></span>
                     <span className="flex-1 leading-snug">{tCat(cat.name)}</span>
                     <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${
                       activeFaqCategory === cat.name ? "bg-white/20" : theme.innerBg
@@ -1356,7 +1362,7 @@ export default function PassengerPortal() {
                           : `${theme.cardBorder} ${theme.cardBg} ${theme.textSecondary} hover:border-[#0284C7]`
                       }`}
                     >
-                      <span>{getCatIcon(cat.name)}</span>
+                      <CatIcon name={cat.name} className="w-3.5 h-3.5" />
                       <span>{tCat(cat.name)}</span>
                       <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
                         activeFaqCategory === cat.name ? "bg-white/20" : theme.innerBg
@@ -1398,7 +1404,7 @@ export default function PassengerPortal() {
                       <div>
                         <div className={`text-[10px] sm:text-[11px] font-bold uppercase tracking-widest ${theme.textMuted} mb-0.5`}>{t("welcomeAboard")}</div>
                         <div className="text-base sm:text-lg font-extrabold tracking-tight">
-                          {t("namaste")}, {session?.user?.name || "Passenger"} 🙏
+                          {t("namaste")}, {session?.user?.name || "Passenger"}
                         </div>
                         <div className={`text-xs ${theme.textSecondary} mt-0.5`}>
                           {t("howCanWeHelp")}
@@ -1440,7 +1446,7 @@ export default function PassengerPortal() {
                       {/* Topic Header with Clear button */}
                       <div className={`flex items-center justify-between gap-2 pb-3 border-b ${theme.cardBorder}`}>
                         <div className="flex items-center gap-2.5 min-w-0">
-                          <span className="text-2xl shrink-0">{getCatIcon(activeFaqCategory)}</span>
+                          <span className="shrink-0 w-8 h-8 rounded-full bg-[#0284C7]/10 flex items-center justify-center"><CatIcon name={activeFaqCategory} className="w-4 h-4 text-[#0284C7]" /></span>
                           <div className="min-w-0">
                             <div className="text-xs sm:text-sm font-bold text-[#0284C7] leading-tight truncate">
                               {tCat(activeFaqCategory)}
@@ -1607,7 +1613,7 @@ export default function PassengerPortal() {
                     <div className={`p-4 rounded-2xl border-2 border-[#0284C7]/40 ${theme.innerBg} space-y-3 shadow-md animate-in fade-in duration-150`}>
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2 text-xs font-bold text-[#0284C7]">
-                          <span>{getCatIcon(activeFaqCategory)}</span>
+                          <CatIcon name={activeFaqCategory} className="w-3.5 h-3.5" />
                           <span>{tCat(activeFaqCategory)}:</span>
                         </div>
                         <button
@@ -1638,7 +1644,7 @@ export default function PassengerPortal() {
                     <div className={`p-4 rounded-xl ${theme.innerBg} border ${theme.cardBorder} space-y-3 max-w-sm`}>
                       <div className="text-xs font-semibold">Did you mean: <span className="text-[#0284C7]">{pendingConfirm.name}</span>?</div>
                       <div className="flex gap-2">
-                        <button onClick={handleConfirmYes} className="flex-1 py-2 rounded-lg bg-[#10B981] text-white text-xs font-bold">Yes ✓</button>
+                        <button onClick={handleConfirmYes} className="flex-1 py-2 rounded-lg bg-[#10B981] text-white text-xs font-bold inline-flex items-center justify-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" /> Yes</button>
                         <button onClick={handleConfirmNo} className="flex-1 py-2 rounded-lg bg-gray-500/15 text-xs font-semibold">No, other</button>
                       </div>
                     </div>
@@ -2405,7 +2411,7 @@ export default function PassengerPortal() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b pb-4 border-gray-200 dark:border-gray-800">
             <div>
               <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
-                {t("welcome")}, {session.user.name} 👋
+                {t("welcome")}, {session.user.name}
               </h1>
               <p className={`text-xs sm:text-sm ${theme.textSecondary}`}>
                 {t("officialAssistance")}
@@ -2737,7 +2743,7 @@ export default function PassengerPortal() {
                   : "bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-slate-300 border border-slate-200/70"
               }`}
             >
-              {isEmergency ? `🚨 ${t("sos")}` : t("voiceCall")}
+              {isEmergency ? (<span className="inline-flex items-center gap-1"><Siren className="w-3 h-3" />{t("sos")}</span>) : t("voiceCall")}
             </span>
           </div>
 

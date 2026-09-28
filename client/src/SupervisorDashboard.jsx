@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import { io } from "socket.io-client";
 import {
-  Users, Headphones, PhoneForwarded, PhoneOff, Radio, LogOut, TrendingUp,
+  Users, Headphones, PhoneForwarded, PhoneOff, Radio, LogOut, TrendingUp, Siren,
 } from "lucide-react";
 import { useSupervisorMonitor } from "./useSupervisorMonitor";
 
@@ -56,18 +57,18 @@ export default function SupervisorDashboard({ user, token, onLogout }) {
   const availableCount = roster.filter((r) => r.status === "available").length;
 
   return (
-    <div className="min-h-screen bg-[#0B1120] text-[#E7ECF6]" style={{ fontFamily: "Inter, sans-serif" }}>
-      <div className="border-b border-[#1E293F] px-6 py-4 flex items-center justify-between">
+    <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 min-h-screen bg-[#F4F6FA] text-[#0F172A]" style={{ fontFamily: "Inter, sans-serif" }}>
+      <div className="border-b border-[#E2E8F0] px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Users size={18} className="text-[#6BA9DE]" />
+          <Users size={18} className="text-[#0284C7]" />
           <div>
             <div className="text-sm font-semibold">SRLMS Supervisor Console</div>
-            <div className="text-[11px] text-[#6B7A99] font-mono">{user?.name}</div>
+            <div className="text-[11px] text-[#64748B] font-mono">{user?.name}</div>
           </div>
         </div>
         <button
           onClick={onLogout}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-[#2C3B5C] bg-[#19243B] hover:bg-[#212F4D] text-xs text-[#C7D0E2]"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-[#E2E8F0] bg-[#FFFFFF] hover:bg-[#FFFFFF] text-xs text-[#475569]"
         >
           <LogOut size={13} /> Log out
         </button>
@@ -81,7 +82,7 @@ export default function SupervisorDashboard({ user, token, onLogout }) {
           {sosAlerts.map((a) => (
             <div key={a.id} className="flex items-center justify-between gap-3 px-4 py-3 rounded-md bg-[#E5484D]/15 border border-[#E5484D]/50 text-[#E5484D] text-xs animate-pulse">
               <div className="flex items-center gap-2 font-semibold">
-                🚨 SOS — {a.customerName}{a.pnr ? ` (PNR ${a.pnr})` : ""} · {new Date(a.at).toLocaleTimeString()}
+                <Siren className="w-4 h-4 shrink-0" /> SOS — {a.customerName}{a.pnr ? ` (PNR ${a.pnr})` : ""} · {new Date(a.at).toLocaleTimeString()}
               </div>
               <button onClick={() => setSosAlerts((prev) => prev.filter((x) => x.id !== a.id))} className="text-[#E5484D] underline underline-offset-2 shrink-0">
                 Dismiss
@@ -102,16 +103,16 @@ export default function SupervisorDashboard({ user, token, onLogout }) {
 
       {/* live roster */}
       <div className="px-6 py-5">
-        <div className="rounded-lg border border-[#24314D] bg-[#0F1728] overflow-hidden">
-          <div className="px-4 py-3 border-b border-[#1E293F] flex items-center gap-2">
-            <Radio size={14} className="text-[#6B7A99]" />
-            <span className="text-xs font-medium uppercase tracking-wider text-[#6B7A99]">Live Executive Roster</span>
+        <div className="rounded-lg border border-[#E2E8F0] bg-[#FFFFFF] overflow-hidden">
+          <div className="px-4 py-3 border-b border-[#E2E8F0] flex items-center gap-2">
+            <Radio size={14} className="text-[#64748B]" />
+            <span className="text-xs font-medium uppercase tracking-wider text-[#64748B]">Live Executive Roster</span>
           </div>
 
           {roster.length === 0 ? (
-            <div className="text-xs text-[#6B7A99] p-6 text-center">No executives online right now.</div>
+            <div className="text-xs text-[#64748B] p-6 text-center">No executives online right now.</div>
           ) : (
-            <div className="divide-y divide-[#161F35]">
+            <div className="divide-y divide-[#E2E8F0]">
               {roster.map((r) => {
                 const meta = STATUS_META[r.status] || STATUS_META.available;
                 const isMonitoring = monitor.monitoringExecutiveId === r.id;
@@ -123,7 +124,7 @@ export default function SupervisorDashboard({ user, token, onLogout }) {
                       <div className={`text-[11px] ${meta.text}`}>
                         {meta.label}
                         {r.status === "busy" && r.peerName && (
-                          <span className="text-[#6B7A99]"> · with {r.peerName} · {fmtDuration(r.callStartedAt)}</span>
+                          <span className="text-[#64748B]"> · with {r.peerName} · {fmtDuration(r.callStartedAt)}</span>
                         )}
                       </div>
                     </div>
@@ -141,7 +142,7 @@ export default function SupervisorDashboard({ user, token, onLogout }) {
                           <button
                             onClick={() => monitor.startMonitoring(r.id)}
                             disabled={!!monitor.monitoringExecutiveId}
-                            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-[#3B82C4]/30 bg-[#3B82C4]/10 text-[#6BA9DE] text-[11px] disabled:opacity-30"
+                            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-[#3B82C4]/30 bg-[#3B82C4]/10 text-[#0284C7] text-[11px] disabled:opacity-30"
                           >
                             <Headphones size={12} /> Join / Listen
                           </button>
@@ -158,13 +159,13 @@ export default function SupervisorDashboard({ user, token, onLogout }) {
                                 → {x.name}
                               </button>
                             ))}
-                            <button onClick={() => setTransferTargetFor(null)} className="text-[11px] text-[#6B7A99] px-1">cancel</button>
+                            <button onClick={() => setTransferTargetFor(null)} className="text-[11px] text-[#64748B] px-1">cancel</button>
                           </div>
                         ) : (
                           <button
                             onClick={() => setTransferTargetFor(r.id)}
                             disabled={availableCount === 0}
-                            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-[#2C3B5C] bg-[#19243B] hover:bg-[#212F4D] text-[#C7D0E2] text-[11px] disabled:opacity-30"
+                            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-[#E2E8F0] bg-[#FFFFFF] hover:bg-[#FFFFFF] text-[#475569] text-[11px] disabled:opacity-30"
                           >
                             <PhoneForwarded size={12} /> Force transfer
                           </button>
@@ -179,7 +180,7 @@ export default function SupervisorDashboard({ user, token, onLogout }) {
         </div>
 
         {monitor.monitoringExecutiveId && (
-          <div className="mt-3 rounded-md border border-[#3B82C4]/30 bg-[#3B82C4]/10 px-4 py-2.5 text-xs text-[#6BA9DE] flex items-center gap-2">
+          <div className="mt-3 rounded-md border border-[#3B82C4]/30 bg-[#3B82C4]/10 px-4 py-2.5 text-xs text-[#0284C7] flex items-center gap-2">
             <Headphones size={13} className="animate-pulse" />
             Listening in — you can hear both sides of this call. You're not sending any audio.
             <audio ref={monitor.audioRef} autoPlay />
@@ -198,12 +199,16 @@ function fmtSec(sec) {
 
 function KpiCard({ label, value, sub }) {
   return (
-    <div className="flex-1 min-w-[150px] rounded-lg bg-[#121B2E] border border-[#24314D] p-4">
-      <div className="text-[11px] uppercase tracking-wider text-[#6B7A99] font-medium mb-2 flex items-center justify-between">
+    <motion.div
+      whileHover={{ y: -3, boxShadow: "0 8px 20px -6px rgba(0,61,165,0.15)" }}
+      transition={{ duration: 0.18 }}
+      className="flex-1 min-w-[150px] rounded-lg bg-[#FFFFFF] border border-[#E2E8F0] p-4"
+    >
+      <div className="text-[11px] uppercase tracking-wider text-[#64748B] font-medium mb-2 flex items-center justify-between">
         {label} <TrendingUp size={13} className="text-[#3B82C4]" />
       </div>
-      <div className="font-mono text-2xl text-[#E7ECF6] font-semibold leading-none">{value}</div>
-      {sub && <div className="text-[11px] text-[#6B7A99] mt-1.5">{sub}</div>}
-    </div>
+      <div className="font-mono text-2xl text-[#0F172A] font-semibold leading-none">{value}</div>
+      {sub && <div className="text-[11px] text-[#64748B] mt-1.5">{sub}</div>}
+    </motion.div>
   );
 }

@@ -90,10 +90,10 @@ export default function App() {
 
 function AccessDenied({ message, onLogout }) {
   return (
-    <div className="min-h-screen bg-[#0B1120] text-[#E7ECF6] flex flex-col items-center justify-center gap-3" style={{ fontFamily: "Inter, sans-serif" }}>
+    <div className="min-h-screen bg-[#F4F6FA] text-[#0F172A] flex flex-col items-center justify-center gap-3" style={{ fontFamily: "Inter, sans-serif" }}>
       <div className="text-sm text-[#E5484D]">Access denied</div>
-      <div className="text-xs text-[#6B7A99]">{message}</div>
-      <button onClick={onLogout} className="mt-2 text-xs text-[#6BA9DE] underline">Log out</button>
+      <div className="text-xs text-[#64748B]">{message}</div>
+      <button onClick={onLogout} className="mt-2 text-xs text-[#0284C7] underline">Log out</button>
     </div>
   );
 }

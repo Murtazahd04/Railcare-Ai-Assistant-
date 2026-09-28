@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
+import { motion } from "framer-motion";
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, PieChart, Pie, Cell, Legend,
@@ -6,7 +7,7 @@ import {
 import { BarChart3, LogOut, Star, ArrowUpCircle, RefreshCw } from "lucide-react";
 
 import { API_BASE } from "./config";
-const COLORS = ["#3B82C4", "#2FBF71", "#F5A623", "#E5484D", "#8B98B8", "#6BA9DE", "#5B6B8C", "#9B7FE8", "#4CC9C0", "#D97757"];
+const COLORS = ["#3B82C4", "#2FBF71", "#F5A623", "#E5484D", "#64748B", "#0284C7", "#64748B", "#9B7FE8", "#4CC9C0", "#D97757"];
 const AUTO_REFRESH_MS = 15000;
 
 export default function AnalyticsDashboard({ token, onLogout }) {
@@ -65,25 +66,25 @@ export default function AnalyticsDashboard({ token, onLogout }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B1120] text-[#E7ECF6]" style={{ fontFamily: "Inter, sans-serif" }}>
-      <div className="border-b border-[#1E293F] px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-2">
+    <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 min-h-screen bg-[#F4F6FA] text-[#0F172A]" style={{ fontFamily: "Inter, sans-serif" }}>
+      <div className="border-b border-[#E2E8F0] px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <BarChart3 size={18} className="text-[#6BA9DE]" />
+          <BarChart3 size={18} className="text-[#0284C7]" />
           <div className="text-sm font-semibold">SRLMS Analytics</div>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 text-[10px] text-[#4A5675]">
+          <div className="flex items-center gap-1.5 text-[10px] text-[#64748B]">
             <span className="relative flex h-1.5 w-1.5">
               <span className="absolute inline-flex h-full w-full rounded-full bg-[#2FBF71] opacity-70 animate-ping" />
               <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#2FBF71]" />
             </span>
             {lastUpdated ? `synced ${lastUpdated.toLocaleTimeString()}` : "syncing…"}
           </div>
-          <button onClick={refreshAll} title="Refresh now" className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-[#2C3B5C] bg-[#19243B] hover:bg-[#212F4D] text-xs text-[#C7D0E2]">
+          <button onClick={refreshAll} title="Refresh now" className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-[#E2E8F0] bg-[#FFFFFF] hover:bg-[#FFFFFF] text-xs text-[#475569]">
             <RefreshCw size={12} />
           </button>
           {onLogout && (
-            <button onClick={onLogout} className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-[#2C3B5C] bg-[#19243B] hover:bg-[#212F4D] text-xs text-[#C7D0E2]">
+            <button onClick={onLogout} className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-[#E2E8F0] bg-[#FFFFFF] hover:bg-[#FFFFFF] text-xs text-[#475569]">
               <LogOut size={13} /> Log out
             </button>
           )}
@@ -110,14 +111,14 @@ export default function AnalyticsDashboard({ token, onLogout }) {
       )}
 
       <div className="px-4 sm:px-6 py-5 grid grid-cols-1 xl:grid-cols-2 gap-5">
-        <div className="rounded-lg border border-[#24314D] bg-[#0F1728] p-4">
-          <div className="text-xs font-medium uppercase tracking-wider text-[#6B7A99] mb-3">Call Volume — last 14 days</div>
+        <div className="rounded-lg border border-[#E2E8F0] bg-[#FFFFFF] p-4">
+          <div className="text-xs font-medium uppercase tracking-wider text-[#64748B] mb-3">Call Volume — last 14 days</div>
           <ResponsiveContainer width="100%" height={280}>
             <LineChart data={timeseries}>
-              <CartesianGrid stroke="#1E293F" strokeDasharray="3 3" />
-              <XAxis dataKey="date" tick={{ fill: "#6B7A99", fontSize: 11 }} tickFormatter={(d) => d.slice(5)} />
-              <YAxis tick={{ fill: "#6B7A99", fontSize: 11 }} allowDecimals={false} />
-              <Tooltip contentStyle={{ background: "#121B2E", border: "1px solid #24314D", fontSize: 12 }} />
+              <CartesianGrid stroke="#E2E8F0" strokeDasharray="3 3" />
+              <XAxis dataKey="date" tick={{ fill: "#64748B", fontSize: 11 }} tickFormatter={(d) => d.slice(5)} />
+              <YAxis tick={{ fill: "#64748B", fontSize: 11 }} allowDecimals={false} />
+              <Tooltip contentStyle={{ background: "#FFFFFF", border: "1px solid #E2E8F0", fontSize: 12 }} />
               <Line type="monotone" dataKey="total" stroke="#3B82C4" strokeWidth={2} dot={false} name="Total" />
               <Line type="monotone" dataKey="completed" stroke="#2FBF71" strokeWidth={2} dot={false} name="Completed" />
               <Line type="monotone" dataKey="missed" stroke="#E5484D" strokeWidth={2} dot={false} name="Missed" />
@@ -126,17 +127,17 @@ export default function AnalyticsDashboard({ token, onLogout }) {
           </ResponsiveContainer>
         </div>
 
-        <div className="rounded-lg border border-[#24314D] bg-[#0F1728] p-4">
-          <div className="text-xs font-medium uppercase tracking-wider text-[#6B7A99] mb-3">Top Intents</div>
+        <div className="rounded-lg border border-[#E2E8F0] bg-[#FFFFFF] p-4">
+          <div className="text-xs font-medium uppercase tracking-wider text-[#64748B] mb-3">Top Intents</div>
           {topIntents.length === 0 ? (
-            <div className="text-xs text-[#6B7A99] py-10 text-center">No intent data yet — make a few test calls first.</div>
+            <div className="text-xs text-[#64748B] py-10 text-center">No intent data yet — make a few test calls first.</div>
           ) : (
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={topIntents} layout="vertical" margin={{ left: 40 }}>
-                <CartesianGrid stroke="#1E293F" strokeDasharray="3 3" />
-                <XAxis type="number" tick={{ fill: "#6B7A99", fontSize: 11 }} allowDecimals={false} />
-                <YAxis type="category" dataKey="intent" tick={{ fill: "#C7D0E2", fontSize: 11 }} width={140} />
-                <Tooltip contentStyle={{ background: "#121B2E", border: "1px solid #24314D", fontSize: 12 }} />
+                <CartesianGrid stroke="#E2E8F0" strokeDasharray="3 3" />
+                <XAxis type="number" tick={{ fill: "#64748B", fontSize: 11 }} allowDecimals={false} />
+                <YAxis type="category" dataKey="intent" tick={{ fill: "#475569", fontSize: 11 }} width={140} />
+                <Tooltip contentStyle={{ background: "#FFFFFF", border: "1px solid #E2E8F0", fontSize: 12 }} />
                 <Bar dataKey="count" radius={[0, 4, 4, 0]}>
                   {topIntents.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                 </Bar>
@@ -146,8 +147,8 @@ export default function AnalyticsDashboard({ token, onLogout }) {
         </div>
 
         {kpis && (
-          <div className="rounded-lg border border-[#24314D] bg-[#0F1728] p-4 xl:col-span-2">
-            <div className="text-xs font-medium uppercase tracking-wider text-[#6B7A99] mb-3">Outcome Breakdown</div>
+          <div className="rounded-lg border border-[#E2E8F0] bg-[#FFFFFF] p-4 xl:col-span-2">
+            <div className="text-xs font-medium uppercase tracking-wider text-[#64748B] mb-3">Outcome Breakdown</div>
             <ResponsiveContainer width="100%" height={260}>
               <PieChart>
                 <Pie
@@ -167,21 +168,21 @@ export default function AnalyticsDashboard({ token, onLogout }) {
                   <Cell fill="#F5A623" />
                   <Cell fill="#E5484D" />
                 </Pie>
-                <Tooltip contentStyle={{ background: "#121B2E", border: "1px solid #24314D", fontSize: 12 }} />
+                <Tooltip contentStyle={{ background: "#FFFFFF", border: "1px solid #E2E8F0", fontSize: 12 }} />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
               </PieChart>
             </ResponsiveContainer>
           </div>
         )}
 
-        <div className="rounded-lg border border-[#24314D] bg-[#0F1728] p-4">
-          <div className="text-xs font-medium uppercase tracking-wider text-[#6B7A99] mb-3">Executive Performance</div>
+        <div className="rounded-lg border border-[#E2E8F0] bg-[#FFFFFF] p-4">
+          <div className="text-xs font-medium uppercase tracking-wider text-[#64748B] mb-3">Executive Performance</div>
           {executives.length === 0 ? (
-            <div className="text-xs text-[#6B7A99] py-10 text-center">No executive-handled calls yet.</div>
+            <div className="text-xs text-[#64748B] py-10 text-center">No executive-handled calls yet.</div>
           ) : (
             <table className="w-full text-xs">
               <thead>
-                <tr className="text-left text-[#6B7A99] border-b border-[#1E293F]">
+                <tr className="text-left text-[#64748B] border-b border-[#E2E8F0]">
                   <th className="pb-2 font-medium">Executive</th>
                   <th className="pb-2 font-medium text-right">Calls</th>
                   <th className="pb-2 font-medium text-right">Avg handle time</th>
@@ -190,16 +191,16 @@ export default function AnalyticsDashboard({ token, onLogout }) {
               </thead>
               <tbody>
                 {executives.map((ex) => (
-                  <tr key={ex.executiveName} className="border-b border-[#1E293F]/60">
-                    <td className="py-2 text-[#E7ECF6]">{ex.executiveName}</td>
+                  <tr key={ex.executiveName} className="border-b border-[#E2E8F0]/60">
+                    <td className="py-2 text-[#0F172A]">{ex.executiveName}</td>
                     <td className="py-2 text-right font-mono">{ex.callsHandled}</td>
                     <td className="py-2 text-right font-mono">{Math.floor(ex.avgHandleTimeSec / 60)}:{(ex.avgHandleTimeSec % 60).toString().padStart(2, "0")}</td>
                     <td className="py-2 text-right">
                       {ex.avgRating != null ? (
                         <span className="flex items-center justify-end gap-1 text-[#F5A623]">
-                          <Star size={11} fill="currentColor" /> {ex.avgRating} <span className="text-[#4A5675]">({ex.ratedCalls})</span>
+                          <Star size={11} fill="currentColor" /> {ex.avgRating} <span className="text-[#64748B]">({ex.ratedCalls})</span>
                         </span>
-                      ) : <span className="text-[#4A5675]">no ratings yet</span>}
+                      ) : <span className="text-[#64748B]">no ratings yet</span>}
                     </td>
                   </tr>
                 ))}
@@ -208,49 +209,49 @@ export default function AnalyticsDashboard({ token, onLogout }) {
           )}
         </div>
 
-        <div className="rounded-lg border border-[#24314D] bg-[#0F1728] p-4">
-          <div className="text-xs font-medium uppercase tracking-wider text-[#6B7A99] mb-3">Passenger Satisfaction</div>
+        <div className="rounded-lg border border-[#E2E8F0] bg-[#FFFFFF] p-4">
+          <div className="text-xs font-medium uppercase tracking-wider text-[#64748B] mb-3">Passenger Satisfaction</div>
           {!ratings || ratings.totalRated === 0 ? (
-            <div className="text-xs text-[#6B7A99] py-10 text-center">No ratings submitted yet.</div>
+            <div className="text-xs text-[#64748B] py-10 text-center">No ratings submitted yet.</div>
           ) : (
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={ratings.distribution}>
-                <CartesianGrid stroke="#1E293F" strokeDasharray="3 3" />
-                <XAxis dataKey="stars" tickFormatter={(s) => `${s}★`} tick={{ fill: "#6B7A99", fontSize: 11 }} />
-                <YAxis tick={{ fill: "#6B7A99", fontSize: 11 }} allowDecimals={false} />
-                <Tooltip contentStyle={{ background: "#121B2E", border: "1px solid #24314D", fontSize: 12 }} />
+                <CartesianGrid stroke="#E2E8F0" strokeDasharray="3 3" />
+                <XAxis dataKey="stars" tickFormatter={(s) => `${s}★`} tick={{ fill: "#64748B", fontSize: 11 }} />
+                <YAxis tick={{ fill: "#64748B", fontSize: 11 }} allowDecimals={false} />
+                <Tooltip contentStyle={{ background: "#FFFFFF", border: "1px solid #E2E8F0", fontSize: 12 }} />
                 <Bar dataKey="count" fill="#F5A623" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           )}
         </div>
 
-        <div className="rounded-lg border border-[#24314D] bg-[#0F1728] p-4 xl:col-span-2">
+        <div className="rounded-lg border border-[#E2E8F0] bg-[#FFFFFF] p-4 xl:col-span-2">
           <div className="flex items-center justify-between mb-3">
-            <div className="text-xs font-medium uppercase tracking-wider text-[#6B7A99]">Escalation Ladder — Open Complaints</div>
+            <div className="text-xs font-medium uppercase tracking-wider text-[#64748B]">Escalation Ladder — Open Complaints</div>
             {escalations && (
-              <div className="flex gap-3 text-[11px] text-[#8B98B8]">
-                <span>Agent: <span className="text-[#E7ECF6] font-mono">{escalations.level0}</span></span>
+              <div className="flex gap-3 text-[11px] text-[#64748B]">
+                <span>Agent: <span className="text-[#0F172A] font-mono">{escalations.level0}</span></span>
                 <span className="text-[#F5A623]">Supervisor: <span className="font-mono">{escalations.level1}</span></span>
                 <span className="text-[#E5484D]">Divisional Officer: <span className="font-mono">{escalations.level2}</span></span>
               </div>
             )}
           </div>
           {!escalations || escalations.escalated.length === 0 ? (
-            <div className="text-xs text-[#6B7A99] py-6 text-center">Nothing currently escalated — everything's with the agent.</div>
+            <div className="text-xs text-[#64748B] py-6 text-center">Nothing currently escalated — everything's with the agent.</div>
           ) : (
             <div className="space-y-2">
               {escalations.escalated.map((c) => (
-                <div key={c._id} className="flex items-center justify-between px-3 py-2 rounded-md bg-[#121B2E] border border-[#24314D] text-xs">
+                <div key={c._id} className="flex items-center justify-between px-3 py-2 rounded-md bg-[#FFFFFF] border border-[#E2E8F0] text-xs">
                   <div>
                     <span className={c.escalationLevel === 2 ? "text-[#E5484D]" : "text-[#F5A623]"}>
                       {c.escalationLevel === 2 ? "Divisional Officer" : "Supervisor"}
                     </span>
-                    <span className="text-[#6B7A99]"> · {c.intent} · {c.passengerName} · PNR {c.pnr}</span>
+                    <span className="text-[#64748B]"> · {c.intent} · {c.passengerName} · PNR {c.pnr}</span>
                   </div>
                   {c.escalationLevel < 2 && (
                     <button onClick={() => handleEscalate(c._id)} disabled={escalating === c._id}
-                      className="flex items-center gap-1 px-2 py-1 rounded-md bg-[#3B82C4]/15 border border-[#3B82C4]/40 text-[#6BA9DE] disabled:opacity-50">
+                      className="flex items-center gap-1 px-2 py-1 rounded-md bg-[#3B82C4]/15 border border-[#3B82C4]/40 text-[#0284C7] disabled:opacity-50">
                       <ArrowUpCircle size={12} /> Escalate now
                     </button>
                   )}
@@ -260,14 +261,14 @@ export default function AnalyticsDashboard({ token, onLogout }) {
           )}
 
           {escalations && escalations.withAgent.length > 0 && (
-            <div className="mt-4 pt-3 border-t border-[#1E293F]">
-              <div className="text-[11px] text-[#6B7A99] mb-2">Still with the agent (oldest first) — escalate now if urgent</div>
+            <div className="mt-4 pt-3 border-t border-[#E2E8F0]">
+              <div className="text-[11px] text-[#64748B] mb-2">Still with the agent (oldest first) — escalate now if urgent</div>
               <div className="space-y-2">
                 {escalations.withAgent.map((c) => (
-                  <div key={c._id} className="flex items-center justify-between px-3 py-2 rounded-md bg-[#121B2E]/60 border border-[#24314D]/60 text-xs">
-                    <span className="text-[#8B98B8]">{c.intent} · {c.passengerName} · PNR {c.pnr}</span>
+                  <div key={c._id} className="flex items-center justify-between px-3 py-2 rounded-md bg-[#FFFFFF]/60 border border-[#E2E8F0]/60 text-xs">
+                    <span className="text-[#64748B]">{c.intent} · {c.passengerName} · PNR {c.pnr}</span>
                     <button onClick={() => handleEscalate(c._id)} disabled={escalating === c._id}
-                      className="flex items-center gap-1 px-2 py-1 rounded-md bg-[#19243B] border border-[#2C3B5C] text-[#8B98B8] disabled:opacity-50">
+                      className="flex items-center gap-1 px-2 py-1 rounded-md bg-[#FFFFFF] border border-[#E2E8F0] text-[#64748B] disabled:opacity-50">
                       <ArrowUpCircle size={12} /> Escalate now
                     </button>
                   </div>
@@ -283,9 +284,13 @@ export default function AnalyticsDashboard({ token, onLogout }) {
 
 function Kpi({ label, value }) {
   return (
-    <div className="flex-1 min-w-[130px] rounded-lg bg-[#121B2E] border border-[#24314D] p-4">
-      <div className="text-[11px] uppercase tracking-wider text-[#6B7A99] font-medium mb-2">{label}</div>
-      <div className="font-mono text-2xl text-[#E7ECF6] font-semibold leading-none">{value}</div>
-    </div>
+    <motion.div
+      whileHover={{ y: -3, boxShadow: "0 8px 20px -6px rgba(0,61,165,0.15)" }}
+      transition={{ duration: 0.18 }}
+      className="flex-1 min-w-[130px] rounded-lg bg-[#FFFFFF] border border-[#E2E8F0] p-4"
+    >
+      <div className="text-[11px] uppercase tracking-wider text-[#64748B] font-medium mb-2">{label}</div>
+      <div className="font-mono text-2xl text-[#0F172A] font-semibold leading-none">{value}</div>
+    </motion.div>
   );
 }

@@ -44,53 +44,53 @@ function UnansweredQueriesPanel({ rows, loading, intents, token, onRefresh }) {
 
   return (
     <div className="p-4 sm:p-6 max-w-4xl mx-auto space-y-3">
-      <div className="text-sm text-[#8B98B8]">
+      <div className="text-sm text-[#64748B]">
         Every query the AI transferred to a human because nothing in the knowledge base was a confident enough
         match — real gaps, not guesses. Most-repeated first.
       </div>
 
       {loading ? (
-        <div className="flex items-center gap-2 text-xs text-[#6B7A99] py-10 justify-center"><Loader2 size={14} className="animate-spin" /> Loading…</div>
+        <div className="flex items-center gap-2 text-xs text-[#64748B] py-10 justify-center"><Loader2 size={14} className="animate-spin" /> Loading…</div>
       ) : rows.length === 0 ? (
-        <div className="text-xs text-[#6B7A99] py-10 text-center border border-dashed border-[#24314D] rounded-md">
+        <div className="text-xs text-[#64748B] py-10 text-center border border-dashed border-[#E2E8F0] rounded-md">
           Nothing unreviewed right now — the knowledge base is covering what people are asking.
         </div>
       ) : (
         <div className="space-y-2">
           {rows.map((row) => (
-            <div key={row._id} className="rounded-md border border-[#24314D] bg-[#0F1728] p-3 space-y-2">
+            <div key={row._id} className="rounded-md border border-[#E2E8F0] bg-[#FFFFFF] p-3 space-y-2">
               <div className="flex items-start justify-between gap-3">
-                <div className="text-sm text-[#E7ECF6] break-words">"{row.utterance}"</div>
+                <div className="text-sm text-[#0F172A] break-words">"{row.utterance}"</div>
                 {row.occurrences > 1 && (
                   <span className="shrink-0 text-[10px] bg-[#F5A623]/15 text-[#F5A623] border border-[#F5A623]/30 rounded-full px-2 py-0.5">
                     asked {row.occurrences}×
                   </span>
                 )}
               </div>
-              <div className="text-[11px] text-[#6B7A99]">
+              <div className="text-[11px] text-[#64748B]">
                 best confidence reached: {Math.round((row.bestConfidence || 0) * 100)}% · via {row.source || "classifier"}
               </div>
 
               {addingTo === row._id ? (
                 <div className="flex flex-wrap items-center gap-2 pt-1">
                   <select
-                    className="bg-[#121B2E] border border-[#24314D] rounded-md text-xs px-2 py-1.5 text-[#C7D0E2] max-w-full"
+                    className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-md text-xs px-2 py-1.5 text-[#475569] max-w-full"
                     onChange={(e) => e.target.value && addToIntent(row, e.target.value)}
                     defaultValue=""
                   >
                     <option value="" disabled>Pick an intent…</option>
                     {intents.map((i) => <option key={i._id} value={i._id}>{i.name}</option>)}
                   </select>
-                  <button onClick={() => setAddingTo(null)} className="text-[11px] text-[#6B7A99]">Cancel</button>
+                  <button onClick={() => setAddingTo(null)} className="text-[11px] text-[#64748B]">Cancel</button>
                 </div>
               ) : (
                 <div className="flex flex-wrap gap-2 pt-1">
                   <button onClick={() => setAddingTo(row._id)} disabled={busyId === row._id}
-                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-[#3B82C4]/10 hover:bg-[#3B82C4]/20 border border-[#3B82C4]/30 text-[#6BA9DE] text-[11px] disabled:opacity-50">
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-[#3B82C4]/10 hover:bg-[#3B82C4]/20 border border-[#3B82C4]/30 text-[#0284C7] text-[11px] disabled:opacity-50">
                     <ArrowRight size={11} /> Add as training question to an intent
                   </button>
                   <button onClick={() => markReviewed(row)} disabled={busyId === row._id}
-                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-[#19243B] hover:bg-[#212F4D] border border-[#2C3B5C] text-[#8B98B8] text-[11px] disabled:opacity-50">
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-md bg-[#FFFFFF] hover:bg-[#FFFFFF] border border-[#E2E8F0] text-[#64748B] text-[11px] disabled:opacity-50">
                     <Check size={11} /> Mark reviewed (no action needed)
                   </button>
                 </div>
@@ -155,44 +155,44 @@ export default function AdminTrainingDashboard({ user, token, onLogout }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B1120] text-[#E7ECF6]" style={{ fontFamily: "Inter, sans-serif" }}>
+    <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 min-h-screen bg-[#F4F6FA] text-[#0F172A]" style={{ fontFamily: "Inter, sans-serif" }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');`}</style>
 
-      <div className="border-b border-[#1E293F] px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-3">
+      <div className="border-b border-[#E2E8F0] px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <Brain size={18} className="text-[#6BA9DE]" />
+          <Brain size={18} className="text-[#0284C7]" />
           <div>
             <div className="text-sm font-semibold">SRLMS AI Training</div>
-            <div className="text-[11px] text-[#6B7A99]">{user?.name}</div>
+            <div className="text-[11px] text-[#64748B]">{user?.name}</div>
           </div>
         </div>
-        <div className="flex items-center gap-1 bg-[#121B2E] border border-[#24314D] rounded-md p-0.5">
+        <div className="flex items-center gap-1 bg-[#FFFFFF] border border-[#E2E8F0] rounded-md p-0.5">
           <button onClick={() => setView("kb")}
-            className={`px-3 py-1.5 rounded text-xs ${view === "kb" ? "bg-[#19243B] text-[#E7ECF6]" : "text-[#6B7A99]"}`}>
+            className={`px-3 py-1.5 rounded text-xs ${view === "kb" ? "bg-[#FFFFFF] text-[#0F172A]" : "text-[#64748B]"}`}>
             Knowledge Base
           </button>
           <button onClick={() => setView("unanswered")}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs ${view === "unanswered" ? "bg-[#19243B] text-[#E7ECF6]" : "text-[#6B7A99]"}`}>
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs ${view === "unanswered" ? "bg-[#FFFFFF] text-[#0F172A]" : "text-[#64748B]"}`}>
             <AlertCircle size={12} /> Unanswered
             {unanswered.length > 0 && <span className="bg-[#E5484D]/20 text-[#E5484D] rounded-full px-1.5">{unanswered.length}</span>}
           </button>
         </div>
         {onLogout && (
           <div className="flex flex-wrap items-center gap-2">
-            <div className="flex items-center gap-1.5 text-[10px] text-[#4A5675]">
+            <div className="flex items-center gap-1.5 text-[10px] text-[#64748B]">
               <span className="relative flex h-1.5 w-1.5">
                 <span className="absolute inline-flex h-full w-full rounded-full bg-[#2FBF71] opacity-70 animate-ping" />
                 <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#2FBF71]" />
               </span>
               live sync
             </div>
-            <a href="#/analytics" className="px-3 py-1.5 rounded-md border border-[#2C3B5C] bg-[#19243B] hover:bg-[#212F4D] text-xs text-[#C7D0E2]">
+            <a href="#/analytics" className="px-3 py-1.5 rounded-md border border-[#E2E8F0] bg-[#FFFFFF] hover:bg-[#FFFFFF] text-xs text-[#475569]">
               Analytics
             </a>
-            <a href="#/rfid" className="px-3 py-1.5 rounded-md border border-[#2C3B5C] bg-[#19243B] hover:bg-[#212F4D] text-xs text-[#C7D0E2]">
+            <a href="#/rfid" className="px-3 py-1.5 rounded-md border border-[#E2E8F0] bg-[#FFFFFF] hover:bg-[#FFFFFF] text-xs text-[#475569]">
               RFID
             </a>
-            <button onClick={onLogout} className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-[#2C3B5C] bg-[#19243B] hover:bg-[#212F4D] text-xs text-[#C7D0E2]">
+            <button onClick={onLogout} className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-[#E2E8F0] bg-[#FFFFFF] hover:bg-[#FFFFFF] text-xs text-[#475569]">
               <LogOut size={13} /> Log out
             </button>
           </div>
@@ -215,16 +215,16 @@ export default function AdminTrainingDashboard({ user, token, onLogout }) {
       <>
       <div className="grid grid-cols-1 lg:grid-cols-[220px_260px_1fr] gap-0 min-h-[calc(100vh-65px)]">
         {/* categories */}
-        <div className="border-r border-[#1E293F] p-3 space-y-1">
+        <div className="border-r border-[#E2E8F0] p-3 space-y-1">
           <div className="flex items-center justify-between px-1 mb-2">
-            <span className="text-[11px] uppercase tracking-wider text-[#6B7A99]">Categories</span>
-            <button onClick={() => setShowNewCategory(true)} className="text-[#6BA9DE] hover:text-[#8FC0EA]">
+            <span className="text-[11px] uppercase tracking-wider text-[#64748B]">Categories</span>
+            <button onClick={() => setShowNewCategory(true)} className="text-[#0284C7] hover:text-[#0369A1]">
               <FolderPlus size={14} />
             </button>
           </div>
           <button
             onClick={() => setSelectedCategoryId(null)}
-            className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs ${!selectedCategoryId ? "bg-[#19243B] text-[#E7ECF6]" : "text-[#8B98B8] hover:bg-[#121B2E]"}`}
+            className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs ${!selectedCategoryId ? "bg-[#FFFFFF] text-[#0F172A]" : "text-[#64748B] hover:bg-[#FFFFFF]"}`}
           >
             All intents ({intents.length})
           </button>
@@ -232,10 +232,10 @@ export default function AdminTrainingDashboard({ user, token, onLogout }) {
             <button
               key={c._id}
               onClick={() => setSelectedCategoryId(c._id)}
-              className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs flex items-center justify-between ${selectedCategoryId === c._id ? "bg-[#19243B] text-[#E7ECF6]" : "text-[#8B98B8] hover:bg-[#121B2E]"}`}
+              className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs flex items-center justify-between ${selectedCategoryId === c._id ? "bg-[#FFFFFF] text-[#0F172A]" : "text-[#64748B] hover:bg-[#FFFFFF]"}`}
             >
               <span className="truncate">{c.name}</span>
-              <span className="text-[#4A5675] font-mono">
+              <span className="text-[#64748B] font-mono">
                 {intents.filter((i) => (i.categoryId?._id || i.categoryId) === c._id).length}
               </span>
             </button>
@@ -243,9 +243,9 @@ export default function AdminTrainingDashboard({ user, token, onLogout }) {
         </div>
 
         {/* intents list */}
-        <div className="border-r border-[#1E293F] p-3 space-y-1">
+        <div className="border-r border-[#E2E8F0] p-3 space-y-1">
           <div className="flex items-center justify-between px-1 mb-2">
-            <span className="text-[11px] uppercase tracking-wider text-[#6B7A99]">Intents</span>
+            <span className="text-[11px] uppercase tracking-wider text-[#64748B]">Intents</span>
             <button
               onClick={() => setShowWizard(true)}
               className="flex items-center gap-1 text-[11px] text-[#2FBF71] hover:text-[#4AD98A]"
@@ -254,24 +254,24 @@ export default function AdminTrainingDashboard({ user, token, onLogout }) {
             </button>
           </div>
           {visibleIntents.length === 0 && (
-            <div className="text-[11px] text-[#6B7A99] px-2 py-4">No intents yet — click New to train one.</div>
+            <div className="text-[11px] text-[#64748B] px-2 py-4">No intents yet — click New to train one.</div>
           )}
           {visibleIntents.map((i) => (
             <button
               key={i._id}
               onClick={() => api(`/kb/intents/${i._id}`, token).then(setSelectedIntent)}
-              className={`w-full text-left px-2.5 py-2 rounded-md text-xs flex items-center justify-between ${selectedIntent?._id === i._id ? "bg-[#19243B] text-[#E7ECF6]" : "text-[#8B98B8] hover:bg-[#121B2E]"}`}
+              className={`w-full text-left px-2.5 py-2 rounded-md text-xs flex items-center justify-between ${selectedIntent?._id === i._id ? "bg-[#FFFFFF] text-[#0F172A]" : "text-[#64748B] hover:bg-[#FFFFFF]"}`}
             >
               <div className="min-w-0">
                 <div className="truncate">{i.name}</div>
-                <div className="text-[10px] text-[#4A5675] font-mono flex items-center gap-1.5 flex-wrap">
+                <div className="text-[10px] text-[#64748B] font-mono flex items-center gap-1.5 flex-wrap">
                   <span>{(i.questions || []).length} questions</span>
                   {i.languages?.length > 2 && (
-                    <span className="text-[#6BA9DE] bg-[#3B82C4]/10 rounded px-1">{i.languages.length} languages</span>
+                    <span className="text-[#0284C7] bg-[#3B82C4]/10 rounded px-1">{i.languages.length} languages</span>
                   )}
                 </div>
               </div>
-              <ChevronRight size={13} className="shrink-0 text-[#3A4767]" />
+              <ChevronRight size={13} className="shrink-0 text-[#64748B]" />
             </button>
           ))}
         </div>
@@ -286,7 +286,7 @@ export default function AdminTrainingDashboard({ user, token, onLogout }) {
               onChanged={() => refreshSelectedIntent(selectedIntent._id)}
             />
           ) : (
-            <div className="text-sm text-[#6B7A99] py-10 text-center">
+            <div className="text-sm text-[#64748B] py-10 text-center">
               Select an intent on the left, or click <span className="text-[#2FBF71]">New</span> to train one from scratch.
             </div>
           )}
@@ -341,17 +341,17 @@ function NewCategoryModal({ token, onClose, onCreated }) {
     <ModalShell onClose={onClose} title="New category">
       <form onSubmit={submit} className="space-y-3">
         <div>
-          <label className="text-xs text-[#6B7A99]">Name</label>
+          <label className="text-xs text-[#64748B]">Name</label>
           <input value={name} onChange={(e) => setName(e.target.value)} required
-            className="w-full mt-1 bg-[#121B2E] border border-[#24314D] rounded-md px-3 py-2 text-sm focus:outline-none" placeholder="e.g. Linen Issues" />
+            className="w-full mt-1 bg-[#FFFFFF] border border-[#E2E8F0] rounded-md px-3 py-2 text-sm focus:outline-none" placeholder="e.g. Linen Issues" />
         </div>
         <div>
-          <label className="text-xs text-[#6B7A99]">Description</label>
+          <label className="text-xs text-[#64748B]">Description</label>
           <input value={description} onChange={(e) => setDescription(e.target.value)}
-            className="w-full mt-1 bg-[#121B2E] border border-[#24314D] rounded-md px-3 py-2 text-sm focus:outline-none" placeholder="optional" />
+            className="w-full mt-1 bg-[#FFFFFF] border border-[#E2E8F0] rounded-md px-3 py-2 text-sm focus:outline-none" placeholder="optional" />
         </div>
         {error && <div className="text-xs text-[#E5484D]">{error}</div>}
-        <button disabled={saving} className="w-full py-2 rounded-md bg-[#3B82C4]/20 border border-[#3B82C4]/40 text-[#6BA9DE] text-sm font-medium hover:bg-[#3B82C4]/30 disabled:opacity-50">
+        <button disabled={saving} className="w-full py-2 rounded-md bg-[#3B82C4]/20 border border-[#3B82C4]/40 text-[#0284C7] text-sm font-medium hover:bg-[#3B82C4]/30 disabled:opacity-50">
           {saving ? "Creating…" : "Create category"}
         </button>
       </form>
@@ -413,10 +413,10 @@ function NewIntentWizard({ token, categories, defaultCategoryId, onClose, onCrea
       <div className="flex items-center gap-1 mb-5 flex-wrap">
         {WIZARD_STEPS.map((label, i) => (
           <React.Fragment key={label}>
-            <div className={`text-[10px] px-2 py-1 rounded-full border ${i === step ? "border-[#3B82C4] text-[#6BA9DE] bg-[#3B82C4]/10" : i < step ? "border-[#2FBF71]/40 text-[#2FBF71]" : "border-[#2C3B5C] text-[#4A5675]"}`}>
+            <div className={`text-[10px] px-2 py-1 rounded-full border ${i === step ? "border-[#3B82C4] text-[#0284C7] bg-[#3B82C4]/10" : i < step ? "border-[#2FBF71]/40 text-[#2FBF71]" : "border-[#E2E8F0] text-[#64748B]"}`}>
               {i + 1}. {label}
             </div>
-            {i < WIZARD_STEPS.length - 1 && <div className="w-2 h-px bg-[#2C3B5C]" />}
+            {i < WIZARD_STEPS.length - 1 && <div className="w-2 h-px bg-[#E2E8F0]" />}
           </React.Fragment>
         ))}
       </div>
@@ -427,7 +427,7 @@ function NewIntentWizard({ token, categories, defaultCategoryId, onClose, onCrea
             <select
               value={form.categoryId}
               onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))}
-              className="w-full bg-[#121B2E] border border-[#24314D] rounded-md px-3 py-2 text-sm focus:outline-none"
+              className="w-full bg-[#FFFFFF] border border-[#E2E8F0] rounded-md px-3 py-2 text-sm focus:outline-none"
             >
               {categories.length === 0 && <option value="">No categories yet — create one first</option>}
               {categories.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
@@ -441,7 +441,7 @@ function NewIntentWizard({ token, categories, defaultCategoryId, onClose, onCrea
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
               placeholder="e.g. Missing Blanket"
-              className="w-full bg-[#121B2E] border border-[#24314D] rounded-md px-3 py-2 text-sm focus:outline-none"
+              className="w-full bg-[#FFFFFF] border border-[#E2E8F0] rounded-md px-3 py-2 text-sm focus:outline-none"
               autoFocus
             />
           </StepBlock>
@@ -471,7 +471,7 @@ function NewIntentWizard({ token, categories, defaultCategoryId, onClose, onCrea
               value={form.expectedAction}
               onChange={(e) => setForm((f) => ({ ...f, expectedAction: e.target.value }))}
               placeholder="e.g. notify_coach_attendant"
-              className="w-full bg-[#121B2E] border border-[#24314D] rounded-md px-3 py-2 text-sm font-mono focus:outline-none"
+              className="w-full bg-[#FFFFFF] border border-[#E2E8F0] rounded-md px-3 py-2 text-sm font-mono focus:outline-none"
             />
           </StepBlock>
         )}
@@ -483,7 +483,7 @@ function NewIntentWizard({ token, categories, defaultCategoryId, onClose, onCrea
               onChange={(e) => setForm((f) => ({ ...f, expectedAnswer: e.target.value }))}
               placeholder="e.g. I'm sorry about that, {passenger_name}. I've notified the coach attendant for coach {coach}."
               rows={3}
-              className="w-full bg-[#121B2E] border border-[#24314D] rounded-md px-3 py-2 text-sm focus:outline-none resize-none"
+              className="w-full bg-[#FFFFFF] border border-[#E2E8F0] rounded-md px-3 py-2 text-sm focus:outline-none resize-none"
             />
           </StepBlock>
         )}
@@ -505,11 +505,11 @@ function NewIntentWizard({ token, categories, defaultCategoryId, onClose, onCrea
 
       {error && <div className="text-xs text-[#E5484D] mt-3">{error}</div>}
 
-      <div className="flex items-center justify-between mt-6 pt-4 border-t border-[#1E293F]">
+      <div className="flex items-center justify-between mt-6 pt-4 border-t border-[#E2E8F0]">
         <button
           onClick={() => setStep((s) => Math.max(0, s - 1))}
           disabled={step === 0}
-          className="px-3 py-1.5 rounded-md text-xs text-[#8B98B8] hover:text-[#E7ECF6] disabled:opacity-30"
+          className="px-3 py-1.5 rounded-md text-xs text-[#64748B] hover:text-[#0F172A] disabled:opacity-30"
         >
           Back
         </button>
@@ -517,7 +517,7 @@ function NewIntentWizard({ token, categories, defaultCategoryId, onClose, onCrea
           <button
             onClick={() => canAdvance() && setStep((s) => s + 1)}
             disabled={!canAdvance()}
-            className="px-4 py-2 rounded-md bg-[#3B82C4]/20 border border-[#3B82C4]/40 text-[#6BA9DE] text-xs font-medium hover:bg-[#3B82C4]/30 disabled:opacity-30"
+            className="px-4 py-2 rounded-md bg-[#3B82C4]/20 border border-[#3B82C4]/40 text-[#0284C7] text-xs font-medium hover:bg-[#3B82C4]/30 disabled:opacity-30"
           >
             Next
           </button>
@@ -541,7 +541,7 @@ function StepBlock({ icon: Icon, title, hint, children }) {
       <div className="flex items-center gap-2 text-sm font-medium">
         <Icon size={15} className="text-[#3B82C4]" /> {title}
       </div>
-      {hint && <div className="text-[11px] text-[#6B7A99]">{hint}</div>}
+      {hint && <div className="text-[11px] text-[#64748B]">{hint}</div>}
       <div className="pt-1">{children}</div>
     </div>
   );
@@ -556,19 +556,19 @@ function ListEditor({ field, form, draftItem, setDraftItem, addToList, removeFro
           onChange={(e) => setDraftItem(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addToList(field); } }}
           placeholder={placeholder}
-          className="flex-1 bg-[#121B2E] border border-[#24314D] rounded-md px-3 py-2 text-sm focus:outline-none"
+          className="flex-1 bg-[#FFFFFF] border border-[#E2E8F0] rounded-md px-3 py-2 text-sm focus:outline-none"
           autoFocus
         />
-        <button onClick={() => addToList(field)} type="button" className="px-3 py-2 rounded-md bg-[#19243B] border border-[#2C3B5C] text-xs">Add</button>
+        <button onClick={() => addToList(field)} type="button" className="px-3 py-2 rounded-md bg-[#FFFFFF] border border-[#E2E8F0] text-xs">Add</button>
       </div>
       <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto">
         {form[field].map((item, i) => (
-          <span key={i} className="flex items-center gap-1 text-[11px] bg-[#121B2E] border border-[#24314D] rounded-full px-2.5 py-1">
+          <span key={i} className="flex items-center gap-1 text-[11px] bg-[#FFFFFF] border border-[#E2E8F0] rounded-full px-2.5 py-1">
             {item}
-            <button onClick={() => removeFromList(field, i)} className="text-[#4A5675] hover:text-[#E5484D]"><X size={11} /></button>
+            <button onClick={() => removeFromList(field, i)} className="text-[#64748B] hover:text-[#E5484D]"><X size={11} /></button>
           </span>
         ))}
-        {form[field].length === 0 && <span className="text-[11px] text-[#4A5675]">Nothing added yet.</span>}
+        {form[field].length === 0 && <span className="text-[11px] text-[#64748B]">Nothing added yet.</span>}
       </div>
     </div>
   );
@@ -616,10 +616,10 @@ function IntentEditor({ intent, token, onChanged }) {
   }
 
   return (
-    <div className="rounded-lg border border-[#24314D] bg-[#0F1728] p-5 space-y-5">
+    <div className="rounded-lg border border-[#E2E8F0] bg-[#FFFFFF] p-5 space-y-5">
       <div>
         <div className="text-base font-semibold">{intent.name}</div>
-        <div className="text-[11px] text-[#6B7A99] font-mono">{intent.categoryId?.name}</div>
+        <div className="text-[11px] text-[#64748B] font-mono">{intent.categoryId?.name}</div>
       </div>
 
       <ChipSection label="Questions" items={intent.questions} draft={newQuestion} setDraft={setNewQuestion} onAdd={addQuestion} placeholder="Add another sample question…" />
@@ -628,19 +628,19 @@ function IntentEditor({ intent, token, onChanged }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="text-[11px] uppercase tracking-wider text-[#6B7A99]">Expected action</label>
-          <input value={action} onChange={(e) => setAction(e.target.value)} className="w-full mt-1 bg-[#121B2E] border border-[#24314D] rounded-md px-3 py-2 text-sm font-mono focus:outline-none" />
+          <label className="text-[11px] uppercase tracking-wider text-[#64748B]">Expected action</label>
+          <input value={action} onChange={(e) => setAction(e.target.value)} className="w-full mt-1 bg-[#FFFFFF] border border-[#E2E8F0] rounded-md px-3 py-2 text-sm font-mono focus:outline-none" />
         </div>
         <div>
-          <label className="text-[11px] uppercase tracking-wider text-[#6B7A99]">Confidence threshold: {threshold.toFixed(2)}</label>
+          <label className="text-[11px] uppercase tracking-wider text-[#64748B]">Confidence threshold: {threshold.toFixed(2)}</label>
           <input type="range" min="0.3" max="0.95" step="0.05" value={threshold} onChange={(e) => setThreshold(parseFloat(e.target.value))} className="w-full mt-2" />
         </div>
       </div>
       <div>
-        <label className="text-[11px] uppercase tracking-wider text-[#6B7A99]">Expected answer</label>
-        <textarea value={answer} onChange={(e) => setAnswer(e.target.value)} rows={2} className="w-full mt-1 bg-[#121B2E] border border-[#24314D] rounded-md px-3 py-2 text-sm focus:outline-none resize-none" />
+        <label className="text-[11px] uppercase tracking-wider text-[#64748B]">Expected answer</label>
+        <textarea value={answer} onChange={(e) => setAnswer(e.target.value)} rows={2} className="w-full mt-1 bg-[#FFFFFF] border border-[#E2E8F0] rounded-md px-3 py-2 text-sm focus:outline-none resize-none" />
       </div>
-      <button onClick={saveMeta} disabled={saving} className="px-4 py-2 rounded-md bg-[#3B82C4]/20 border border-[#3B82C4]/40 text-[#6BA9DE] text-xs font-medium hover:bg-[#3B82C4]/30 disabled:opacity-50">
+      <button onClick={saveMeta} disabled={saving} className="px-4 py-2 rounded-md bg-[#3B82C4]/20 border border-[#3B82C4]/40 text-[#0284C7] text-xs font-medium hover:bg-[#3B82C4]/30 disabled:opacity-50">
         {saving ? "Saving…" : "Save changes"}
       </button>
     </div>
@@ -650,10 +650,10 @@ function IntentEditor({ intent, token, onChanged }) {
 function ChipSection({ label, items, draft, setDraft, onAdd, placeholder }) {
   return (
     <div>
-      <label className="text-[11px] uppercase tracking-wider text-[#6B7A99]">{label} ({(items || []).length})</label>
+      <label className="text-[11px] uppercase tracking-wider text-[#64748B]">{label} ({(items || []).length})</label>
       <div className="flex flex-wrap gap-1.5 mt-1.5 mb-2">
         {(items || []).map((item, i) => (
-          <span key={i} className="text-[11px] bg-[#121B2E] border border-[#24314D] rounded-full px-2.5 py-1">{item}</span>
+          <span key={i} className="text-[11px] bg-[#FFFFFF] border border-[#E2E8F0] rounded-full px-2.5 py-1">{item}</span>
         ))}
       </div>
       <div className="flex gap-2">
@@ -662,9 +662,9 @@ function ChipSection({ label, items, draft, setDraft, onAdd, placeholder }) {
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); onAdd(); } }}
           placeholder={placeholder}
-          className="flex-1 bg-[#121B2E] border border-[#24314D] rounded-md px-3 py-1.5 text-xs focus:outline-none"
+          className="flex-1 bg-[#FFFFFF] border border-[#E2E8F0] rounded-md px-3 py-1.5 text-xs focus:outline-none"
         />
-        <button onClick={onAdd} className="px-3 py-1.5 rounded-md bg-[#19243B] border border-[#2C3B5C] text-xs">Add</button>
+        <button onClick={onAdd} className="px-3 py-1.5 rounded-md bg-[#FFFFFF] border border-[#E2E8F0] text-xs">Add</button>
       </div>
     </div>
   );
@@ -692,7 +692,7 @@ function LiveTester({ token }) {
   }
 
   return (
-    <div className="rounded-lg border border-[#24314D] bg-[#0F1728] p-5">
+    <div className="rounded-lg border border-[#E2E8F0] bg-[#FFFFFF] p-5">
       <div className="flex items-center gap-2 text-sm font-medium mb-3">
         <PlayCircle size={15} className="text-[#2FBF71]" /> Try it — test the live classifier
       </div>
@@ -701,7 +701,7 @@ function LiveTester({ token }) {
           value={utterance}
           onChange={(e) => setUtterance(e.target.value)}
           placeholder="Type what a passenger might say…"
-          className="flex-1 bg-[#121B2E] border border-[#24314D] rounded-md px-3 py-2 text-sm focus:outline-none"
+          className="flex-1 bg-[#FFFFFF] border border-[#E2E8F0] rounded-md px-3 py-2 text-sm focus:outline-none"
         />
         <button disabled={loading} className="px-4 py-2 rounded-md bg-[#2FBF71]/15 border border-[#2FBF71]/40 text-[#2FBF71] text-xs font-medium hover:bg-[#2FBF71]/25 disabled:opacity-50 flex items-center gap-1.5">
           {loading ? <Loader2 size={13} className="animate-spin" /> : <PlayCircle size={13} />} Test
@@ -711,10 +711,10 @@ function LiveTester({ token }) {
       {error && <div className="text-xs text-[#E5484D] mb-2">{error}</div>}
 
       {result && (
-        <div className="rounded-md border border-[#24314D] bg-[#121B2E] p-3 space-y-2 text-xs">
+        <div className="rounded-md border border-[#E2E8F0] bg-[#FFFFFF] p-3 space-y-2 text-xs">
           <div className="flex items-center justify-between">
             <span>Matched intent</span>
-            <span className={result.matchedIntent ? "text-[#6BA9DE]" : "text-[#6B7A99]"}>{result.matchedIntent || "none"}</span>
+            <span className={result.matchedIntent ? "text-[#0284C7]" : "text-[#64748B]"}>{result.matchedIntent || "none"}</span>
           </div>
           <div className="flex items-center justify-between">
             <span>Confidence</span>
@@ -726,10 +726,10 @@ function LiveTester({ token }) {
           </div>
           <div className="flex items-center justify-between">
             <span>Classifier source</span>
-            <span className="font-mono text-[#8B98B8]">{result.source || "unknown"}</span>
+            <span className="font-mono text-[#64748B]">{result.source || "unknown"}</span>
           </div>
           {result.reply && (
-            <div className="pt-2 border-t border-[#24314D] text-[#C7D0E2]">"{result.reply}"</div>
+            <div className="pt-2 border-t border-[#E2E8F0] text-[#475569]">"{result.reply}"</div>
           )}
         </div>
       )}
@@ -741,10 +741,10 @@ function LiveTester({ token }) {
 function ModalShell({ title, onClose, children, wide }) {
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-      <div className={`w-full ${wide ? "max-w-lg" : "max-w-sm"} rounded-lg border border-[#24314D] bg-[#0F1728] p-5`} style={{ fontFamily: "Inter, sans-serif" }}>
+      <div className={`w-full ${wide ? "max-w-lg" : "max-w-sm"} rounded-lg border border-[#E2E8F0] bg-[#FFFFFF] p-5`} style={{ fontFamily: "Inter, sans-serif" }}>
         <div className="flex items-center justify-between mb-4">
-          <div className="text-sm font-semibold text-[#E7ECF6]">{title}</div>
-          <button onClick={onClose} className="text-[#6B7A99] hover:text-[#E7ECF6]"><X size={16} /></button>
+          <div className="text-sm font-semibold text-[#0F172A]">{title}</div>
+          <button onClick={onClose} className="text-[#64748B] hover:text-[#0F172A]"><X size={16} /></button>
         </div>
         {children}
       </div>
